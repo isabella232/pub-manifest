@@ -1,12 +1,10 @@
 {
-    "@context": [
-        "https://schema.org",
-        "https://www.w3.org/ns/pub-context"
-    ],
+    "conformsTo": ["https://example.com/publication"],
+    "profile": "https://example.com/publication",
     "type": [
         "Book"
     ],
-    "url": "https://publisher.example.org/mobydick",
+    "url": ["https://publisher.example.org/mobydick"],
     "name": [
         {
             "value": "Moby-Dick",
