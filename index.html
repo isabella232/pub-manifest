@@ -24,14 +24,16 @@
 				wg: "Publishing Working Group",
 				specStatus: "ED",
 				shortName: "pub-manifest",
-				previousPublishDate: "2019-09-11",
-				previousMaturity: "WD",
+				previousPublishDate: "2019-12-05",
+				previousMaturity: "CR",
+				implementationReportURI: "https://www.w3.org/publishing/groups/publ-wg/implementation/results.html",
+				crEnd : "2020-03-31",
 				edDraftURI: "https://w3c.github.io/pub-manifest/",
 				editors: [
 					{
 						"name": "Matt Garrish",
 						"company": "DAISY Consortium",
-						"companyURL": "http://www.daisy.org",
+						"companyURL": "https://daisy.org",
 						"w3cid": 51655
 					},
 					{
@@ -56,7 +58,7 @@
 					repoURL: "https://github.com/w3c/pub-manifest/",
 					branch: "master"
 				},
-				localBiblio: biblio
+				localBiblio: localBiblio
 			};
 			// ]]>
 	  </script>
@@ -804,7 +806,7 @@
         {
             "type": "LinkedResource",
             "url": "chapter1.json",
-            "encodingFormat": "application/vnd.wp-sync-media+json",
+            "encodingFormat": "application/vnd.syncnarr+json",
             "duration": "PT1669S"
         }
     ]
@@ -869,12 +871,8 @@
 
 					<p>By consequence, relative-URL strings in embedded manifests are resolved against the URL of the
 						document that references the manifest <em>unless</em> the document declares a base URL (i.e., in
-						a <a data-cite="!html#the-base-element"><code>&lt;base&gt;</code> element</a> in its
-						header).</p>
-
-					<p class="note">URLs allow for the usage of characters from Unicode following&#160;[[rfc3987]]. See
-							<a href="https://www.w3.org/TR/html/references.html#biblio-url">the note in the HTML5
-							specification</a> for further details.</p>
+						a <a href="https://html.spec.whatwg.org/multipage/semantics.html#the-base-element"
+								><code>&lt;base&gt;</code> element</a> in its header).</p>
 				</section>
 
 				<section id="value-id">
@@ -932,6 +930,11 @@
 					<li>the <dfn>publication context</dfn>: <code>https://www.w3.org/ns/pub-context</code></li>
 				</ol>
 
+				<p class="note">Although Schema.org is often referenced using the <code>http</code> URI scheme, <a
+						href="https://schema.org/docs/faq.html#19">the vocabulary is being migrated</a> to use the
+					secure <code>https</code> scheme as its default. As a result, only the <code>https</code> scheme is
+					recognized in the publication manifest context.</p>
+
 				<pre class="example" title="Setting the context declaration.">{
     "@context" : [
         "https://schema.org",
@@ -944,10 +947,8 @@
 					requirement for the <a href="https://schema.org/creator">creator</a> property to be order
 					preserving).</p>
 
-				<p>Although Schema.org is often referenced using the <code>http</code> URI scheme, <a
-						href="https://schema.org/docs/faq.html#19">the vocabulary is being migrated</a> to use the
-					secure <code>https</code> scheme as its default. The use of <code>https</code> when referencing
-					Schema.org in the manifest is REQUIRED by this specification.</p>
+				<p><a>Profiles</a> of this specification MAY require additional context URLs, but such URLs MUST be
+					ordered after these two components.</p>
 
 				<p>The context can be extended by including additional paramaters &#8212; such as the <a
 						href="#manifest-context">global language and direction declarations</a> &#8212; in an object
@@ -1090,7 +1091,7 @@
         {
             "value": "<span lang="ar" dir="rtl">HTML و CSS: تصميم و إنشاء مواقع الويب</span>",
             "direction": "rtl"
-        }
+        },
         {
             "value"    : "HTML and CSS: Design and Build Websites",
             "language" : "en"
@@ -1198,7 +1199,7 @@
 									>absolute-URL-with-fragment string</a>&#160;[[!url]].</td>
 							<td><a href="#value-array">Array</a> of <a href="#value-literal">Literals</a></td>
 							<td><a
-									href="https://www.dublincore.org/specifications/dublin-core/dcmi-terms/#terms-conformsTo"
+									href="https://www.dublincore.org/specifications/dublin-core/dcmi-terms/#http://purl.org/dc/terms/conformsTo"
 									>conformsTo</a></td>
 						</tr>
 					</tbody>
@@ -1207,11 +1208,11 @@
 				<p>The URL to use for a profile is defined in its respective specification.</p>
 
 				<p class="note">The <code>conformsTo</code> property can also be used to indicate conformance to other
-					specifications and standards (e.g., to [[WCAG21]]).</p>
+					specifications and standards (e.g., to [[wcag21]]).</p>
 
 				<pre class="example" title="Identify that a digital publication conforms to the W3C Audiobooks specification.">{
     …
-    "conformsTo" : "https://www.w3.org/TR/audiobooks",
+    "conformsTo" : "https://www.w3.org/TR/audiobooks/",
     …
 }</pre>
 			</section>
@@ -1516,7 +1517,7 @@
 										<a href="#value-array">Array</a> of <a href="#value-entity">Entities</a>
 									</td>
 									<td>
-										<a href="https://bib.schema.org/artist"><code>artist</code></a> (<a
+										<a href="https://schema.org/artist"><code>artist</code></a> (<a
 											href="https://schema.org/VisualArtwork">VisualArtwork</a>) </td>
 								</tr>
 								<tr>
@@ -1544,7 +1545,7 @@
 										<a href="#value-array">Array</a> of <a href="#value-entity">Entities</a>
 									</td>
 									<td>
-										<a href="https://bib.schema.org/colorist"><code>colorist</code></a> (<a
+										<a href="https://schema.org/colorist"><code>colorist</code></a> (<a
 											href="https://schema.org/VisualArtwork">VisualArtwork</a>) </td>
 								</tr>
 								<tr>
@@ -1614,7 +1615,7 @@
 										<a href="#value-array">Array</a> of <a href="#value-entity">Entities</a>
 									</td>
 									<td>
-										<a href="https://bib.schema.org/inker"><code>inker</code></a> (<a
+										<a href="https://schema.org/inker"><code>inker</code></a> (<a
 											href="https://schema.org/VisualArtwork">VisualArtwork</a>) </td>
 								</tr>
 								<tr>
@@ -1628,7 +1629,7 @@
 										<a href="#value-array">Array</a> of <a href="#value-entity">Entities</a>
 									</td>
 									<td>
-										<a href="https://bib.schema.org/letterer"><code>letterer</code></a> (<a
+										<a href="https://schema.org/letterer"><code>letterer</code></a> (<a
 											href="https://schema.org/VisualArtwork">VisualArtwork</a>) </td>
 								</tr>
 								<tr>
@@ -1641,7 +1642,7 @@
 										<a href="#value-array">Array</a> of <a href="#value-entity">Entities</a>
 									</td>
 									<td>
-										<a href="https://bib.schema.org/penciler"><code>penciler</code></a> (<a
+										<a href="https://schema.org/penciler"><code>penciler</code></a> (<a
 											href="https://schema.org/VisualArtwork">VisualArtwork</a>) </td>
 								</tr>
 								<tr>
@@ -1669,8 +1670,8 @@
 										<a href="#value-array">Array</a> of <a href="#value-entity">Entities</a>
 									</td>
 									<td>
-										<a href="https://bib.schema.org/readBy"><code>readBy</code></a> (<a
-											href="https://bib.schema.org/Audiobook">Audiobook</a>) </td>
+										<a href="https://schema.org/readBy"><code>readBy</code></a> (<a
+											href="https://schema.org/Audiobook">Audiobook</a>) </td>
 								</tr>
 								<tr>
 									<td id="translator">
@@ -2485,9 +2486,9 @@
 
 						<p>If the cover is an image (whether embedded in an HTML resource or not), it is strongly
 							advised to follow <a href="https://www.w3.org/TR/WCAG/#non-text-content">Success Criterion
-								1.1.1</a>&#160;[[WCAG]] for the provision of alternative text and extended descriptions.
-							For image formats that do not provide the ability to embed this information, the <a
-								href="#linkedresource-name"><code>name</code></a> and <a
+								1.1.1</a>&#160;[[wcag21]] for the provision of alternative text and extended
+							descriptions. For image formats that do not provide the ability to embed this information,
+							the <a href="#linkedresource-name"><code>name</code></a> and <a
 								href="#linkedresource-description"><code>description</code></a> properties of
 									<a><code>LinkedResource</code></a> can be used to provide alternative text and
 							extended descriptions, respectively. In these cases, the <code>name</code> property SHOULD
@@ -2589,18 +2590,23 @@
 }</pre>
 					</section>
 
-					<section id="pub-table-of-contents">
+					<section id="contents">
 						<h5>Table of Contents</h5>
 
 						<p>The table of contents is a navigational aid that provides links to the major structural
 							sections of a <a>digital publication</a>.</p>
 
-						<p>The <dfn data-lt="toc">table of contents</dfn> is identified by the <code>contents</code>
-							link relation&#160;[[!iana-link-relations]].</p>
+						<p>The resource that contains the <dfn data-lt="toc">table of contents</dfn> is identified by
+							the <code>contents</code> link relation&#160;[[!iana-link-relations]]. The table of contents
+							proper is the first element inside that resource with the <code>role</code> value
+								<code>doc-toc</code>, as defined in <a href="#app-toc-html"></a>.</p>
 
 						<p>Only one resource MAY be identified as containing the table of contents. If multiple
 							instances are specified, user agents MUST use the first instance encountered, with
-							precedence given to the <a href="#default-reading-order">reading order</a>.</p>
+							precedence given to resources in the <a href="#default-reading-order">reading order</a>.</p>
+
+						<p><a>Profiles</a> of this specification MAY define how to locate a resource containing the
+							table of contents when no resource is identified by the <code>contents</code> relation.</p>
 
 						<p>The link to the table of contents MUST NOT be specified in the <a href="#links">links
 								list</a>.</p>
@@ -2820,7 +2826,7 @@
 
 				<p>When a <a>digital publication</a> format allows manifests to be embedded within an HTML document, the
 					manifest MUST be included in a <a
-						href="https://www.w3.org/TR/html5/semantics-scripting.html#the-script-element"
+						href="https://html.spec.whatwg.org/multipage/scripting.html#the-script-element"
 							><code>script</code> element</a>&#160;[[!html]] whose <a
 						href="https://www.w3.org/TR/json-ld11/#embedding-json-ld-in-html-documents"><code>type</code>
 						attribute is set to <code>application/ld+json</code></a>&#160;[[!json-ld11]].</p>
@@ -2912,9 +2918,10 @@
 				<ul>
 					<li><var>text</var>: a UTF-8 string representing the manifest.</li>
 					<li><var>base</var>: a URL string that represents the <a>base URL</a> for the manifest.</li>
-					<li><var>document</var>: the <a data-cite="html#the-document-object">HTML Document (DOM)
-						Node</a>&#160;[[!html]] of the document that <a href="#manifest-discovery">references the
-							manifest</a>, when available.</li>
+					<li><var>document</var>: the <a
+							href="https://html.spec.whatwg.org/multipage/dom.html#the-document-object">HTML Document
+							(DOM) Node</a>&#160;[[!html]] of the document that <a href="#manifest-discovery">references
+							the manifest</a>, when available.</li>
 				</ul>
 
 				<p class="note">This algorithm does not describe how the manifest is discovered and obtained. The steps
@@ -3025,6 +3032,20 @@
 								and base direction, respectively, for localizable strings without a declaration.</p>
 							<p>The iterator moves backwards through <var>@context</var> as the last language and
 								direction declarations override any earlier ones.</p>
+						</details>
+					</li>
+
+					<li id="processing-context-extension">
+						<p>(<a href="#manifest-context"></a>) If a <a>profile</a> requires additional validation of the
+							manifest context, those steps are performed here.</p>
+						<details>
+							<summary>Explanation</summary>
+							<p>This extension step allows verification of any information a profile requires be present
+								in the manifest context (e.g., additional context URLs or parameters). These steps have
+								to be performed at this point, as <code>@context</code> terms are removed as part of the
+									<a href="#processing-normalize">data normalization</a> in the next step. A more
+								general step for processing profile data is provided at a <a
+									href="#processing-extension">later step</a>.</p>
 						</details>
 					</li>
 
@@ -4167,8 +4188,9 @@
 
 					<p>To <dfn>add default values</dfn> for missing properties in <a
 							href="https://infra.spec.whatwg.org/#ordered-map">map</a>
-						<var>data</var> with an optional <a data-cite="html#the-document-object">HTML Document (DOM)
-							Node</a>&#160;[[!html]] <var>document</var>, run the following steps:</p>
+						<var>data</var> with an optional <a
+							href="https://html.spec.whatwg.org/multipage/dom.html#the-document-object">HTML Document
+							(DOM) Node</a>&#160;[[!html]] <var>document</var>, run the following steps:</p>
 
 					<ol>
 						<li id="processing-defaults-title">
@@ -4181,17 +4203,18 @@
 									<ul>
 										<li>
 											<p>if <var>document</var> is set, if the <a
-													data-cite="html#the-title-element"><code>title</code></a>
-												element&#160;[[!html]] of <var>document</var> is set and is not empty,
-												set <var>title["value"]</var> to the text content of the
+													href="https://html.spec.whatwg.org/multipage/semantics.html#the-title-element"
+														><code>title</code></a> element&#160;[[!html]] of
+													<var>document</var> is set and is not empty, set
+													<var>title["value"]</var> to the text content of the
 													<code>title</code> element.</p>
 											<p>Set <var>title["language"]</var> to the <a
-													data-cite="html#the-lang-and-xml:lang-attributes"
-												>language</a>&#160;[[!html]], if available, and
+													href="https://html.spec.whatwg.org/multipage/dom.html#the-lang-and-xml%3Alang-attributes"
+													>language</a>&#160;[[!html]], if available, and
 													<var>title["direction"]</var> to the <a
-													data-cite="html#the-dir-attribute">base direction</a>&#160;[[!html]]
-												if that value is available and its value is either "<code>ltr</code>" or
-													"<code>rtl</code>". </p>
+													href="https://html.spec.whatwg.org/multipage/dom.html#the-dir-attribute"
+													>base direction</a>&#160;[[!html]] if that value is available and
+												its value is either "<code>ltr</code>" or "<code>rtl</code>". </p>
 										</li>
 										<li>
 											<p>otherwise, <a>validation error</a>, generate a value for
@@ -4292,7 +4315,7 @@
 				<li>It MUST adhere to the requirements for constructing a manifest as defined in <a href="#manifest"
 					></a>.</li>
 				<li>It MUST define a unique conformance URL and require that conforming publications include this URL in
-					their <a href="profile-conformance"><code>conformsTo</code> property</a>.</li>
+					their <a href="#profile-conformance"><code>conformsTo</code> property</a>.</li>
 				<li>One or both <a href="#manifest-link">linking methods</a> MUST be used in the discovery of the
 					manifest.</li>
 				<li>The generic processing steps described in <a href="#manifest-processing"></a> MUST remain valid for
@@ -4516,10 +4539,10 @@ dictionary LocalizableString {
 				<h3>Introduction</h3>
 
 				<p>To facilitate navigation within pages and across sites, HTML uses the <a
-						href="https://www.w3.org/TR/html/sections.html#the-nav-element"><code>nav</code>
-					element</a>&#160;[[html]] to express lists of links. Although generic in nature by default, the
+						href="https://html.spec.whatwg.org/multipage/sections.html#the-nav-element"><code>nav</code>
+						element</a>&#160;[[html]] to express lists of links. Although generic in nature by default, the
 					purpose of a <code>nav</code> element can be more specifically identified by use of the <a
-						href="https://www.w3.org/TR/html/dom.html#aria-role-attribute"><code>role</code>
+						href="https://html.spec.whatwg.org/multipage/dom.html#wai-aria"><code>role</code>
 					attribute</a>&#160;[[html]]. In particular, the <code>doc-toc</code> role from the [[dpub-aria-1.0]]
 					vocabulary identifies the <code>nav</code> element as the <a>digital publication's</a> table of
 					contents.</p>
@@ -4533,24 +4556,32 @@ dictionary LocalizableString {
 
 				<p>Authors have a choice of lists (ordered or unordered) to construct their table of contents. By
 					tagging each link within these lists in anchor tags (<a
-						href="https://www.w3.org/TR/html/textlevel-semantics.html#the-a-element"><code>a</code>
-						elements</a>), user agents can easily differentiate the information they need from any
-					peripheral content (asides) or stylistic tagging that has also been added. The table of contents can
-					consist of both active links (with an <code>href</code> attribute) and inactive links (excluding the
-						<code>href</code> attribute), providing additional flexibility in how the table of contents is
-					constructed (e.g., to omit links to certain headings or only link to certain content in a
-					preview).</p>
+						href="https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-a-element"
+							><code>a</code> elements</a>), user agents can easily differentiate the information they
+					need from any peripheral content (asides) or stylistic tagging that has also been added. The table
+					of contents can consist of both active links (with an <code>href</code> attribute) and inactive
+					links (excluding the <code>href</code> attribute), providing additional flexibility in how the table
+					of contents is constructed (e.g., to omit links to certain headings or only link to certain content
+					in a preview).</p>
+
+				<p>Note, however, that user agents are <strong>not required</strong> to preserve the presentational
+					aspects of the table of contents (i.e., the user agent is typically extracting the information in
+					order to present it in a common way across all publications). User agents are only expected to
+					retain the text content of the link elements, for example, so text styling, inline images and other
+					non-text content might be lost. Similarly, list styling and even how many levels deep of linking to
+					display are at the discretion of the user agent. For this reason, linking to the presentational
+					table of contents so that users are not limited to the machine-processed one is advised.</p>
 			</section>
 
 			<section id="app-toc-html">
 				<h3>HTML Structure</h3>
 
 				<p>The table of contents is expressed via an [[!html]]&#160;element (typically a <a
-						href="https://www.w3.org/TR/html/sections.html#the-nav-element"><code>nav</code> element</a>).
-					This element MUST be identified by the <code>role</code> attribute&#160;[[!html]] value
-						"<code>doc-toc</code>"&#160;[[!dpub-aria-1.0]], and MUST be the first element in the document in
-						<a href="https://dom.spec.whatwg.org/#concept-tree-order">document tree order</a>&#160;[[!dom]]
-					with that <code>role</code> value.</p>
+						href="https://html.spec.whatwg.org/multipage/sections.html#the-nav-element"><code>nav</code>
+						element</a>). This element MUST be identified by the <code>role</code> attribute&#160;[[!html]]
+					value "<code>doc-toc</code>"&#160;[[!dpub-aria-1.0]], and MUST be the first element in the document
+					in <a href="https://dom.spec.whatwg.org/#concept-tree-order">document tree order</a>&#160;[[!dom]]
+					with that <code>role</code> value. The element MAY be hidden from users.</p>
 
 				<p>The manifest SHOULD <a href="#table-of-contents">identify the resource</a> that contains the table of
 					contents.</p>
@@ -4564,7 +4595,7 @@ dictionary LocalizableString {
 						<p>Although a title for the table of contents is optional, to avoid having a user agent generate
 							a placeholder title when one is needed, it is advised to add one. Titles are specified using
 							any of the [[!html]]&#160;<a
-								href="https://www.w3.org/TR/html/sections.html#the-h1-h2-h3-h4-h5-and-h6-elements"
+								href="https://html.spec.whatwg.org/multipage/sections.html#the-h1,-h2,-h3,-h4,-h5,-and-h6-elements"
 									><code>h1</code> through <code>h6</code> elements</a>. Note that only the first such
 							element is recognized as the title. If a heading element is not found before the <a
 								href="#toc-list-links">list of links</a>, user agents will assume that one has not been
@@ -4573,14 +4604,14 @@ dictionary LocalizableString {
 					<dt id="toc-list-links">List of Links</dt>
 					<dd>
 						<p>The first [[!html]]&#160;<a
-								href="https://www.w3.org/TR/html/grouping-content.html#the-ol-element"
-								><code>ol</code></a> or <a
-								href="https://www.w3.org/TR/html/grouping-content.html#the-ul-element"
-								><code>ul</code></a> list element encountered in the <code>nav</code> element is assumed
-							to contain the list that defines the links into the content. This list will be found even if
-							it is nested inside of <a
-								href="https://www.w3.org/TR/html/grouping-content.html#the-div-element"
-								><code>div</code></a> elements, for example, as the algorithm <a
+								href="https://html.spec.whatwg.org/multipage/grouping-content.html#the-ol-element"
+									><code>ol</code></a> or <a
+								href="https://html.spec.whatwg.org/multipage/grouping-content.html#the-ul-element"
+									><code>ul</code></a> list element encountered in the <code>nav</code> element is
+							assumed to contain the list that defines the links into the content. This list will be found
+							even if it is nested inside of <a
+								href="https://html.spec.whatwg.org/multipage/grouping-content.html#the-div-element"
+									><code>div</code></a> elements, for example, as the algorithm <a
 								href="#toc-ignored-elements">ignores elements</a> that are not relevant to its
 							processing. The list cannot occur inside of any <a href="#toc-skipped-elements">skipped
 								elements</a>, however, since their internal contents are not evaluated.</p>
@@ -4591,14 +4622,16 @@ dictionary LocalizableString {
 					<dt id="toc-branches">Branches</dt>
 					<dd>
 						<p>If the table of contents is considered as a tree of links, then each list item (<a
-								href="https://www.w3.org/TR/html/grouping-content.html#the-li-element"><code>li</code>
-								element</a>) inside of the <a href="#toc-list-links">list of links</a> represents one
-							branch. Each of these branches has to have a name and optional destination in order to be
-							presented to users, and this information is obtained from the first <a
-								href="https://www.w3.org/TR/html/textlevel-semantics.html#the-a-element"><code>a</code>
-								element</a> found within the list item, <a href="#toc-ignored-elements">wherever it is
-								nested</a> (again, excluding any <code>a</code> elements inside of <a
-								href="#toc-skipped-elements">skipped elements</a>.)</p>
+								href="https://html.spec.whatwg.org/multipage/grouping-content.html#the-li-element"
+									><code>li</code> element</a>) inside of the <a href="#toc-list-links">list of
+								links</a> represents one branch. Each of these branches has to have a name and optional
+							destination in order to be presented to users, and this information is obtained from the
+							first <a
+								href="https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-a-element"
+									><code>a</code> element</a> found within the list item, <a
+								href="#toc-ignored-elements">wherever it is nested</a> (again, excluding any
+								<code>a</code> elements inside of <a href="#toc-skipped-elements">skipped
+							elements</a>.)</p>
 						<p>The link destination for the branch is obtained from the <code>a</code> element's
 								<code>href</code> attribute, when specified. This attribute can be omitted if a link is
 							not available (e.g., in a preview) or not relevant (e.g., a grouping header). When providing
@@ -4614,15 +4647,16 @@ dictionary LocalizableString {
 					<dd>
 						<p>A small set of elements are ignored when the parsing table of contents to avoid
 							misinterpretation. These are the [[!html]]&#160;<a
-								href="https://www.w3.org/TR/html/dom.html#sectioning-content">sectioning content
-								elements</a> and <a href="https://www.w3.org/TR/html/sections.html#sectioning-roots"
-								>sectioning root elements</a>. The reason they are ignored is because they can defined
-							their own outlines (i.e., they can represent embedded content that is self-contained and not
+								href="https://html.spec.whatwg.org/multipage/dom.html#sectioning-content-2">sectioning
+								content elements</a> and <a
+								href="https://html.spec.whatwg.org/multipage/sections.html#sectioning-root">sectioning
+								root elements</a>. The reason they are ignored is because they can defined their own
+							outlines (i.e., they can represent embedded content that is self-contained and not
 							necessarily related to the structure of content links).</p>
 						<p>Any element that has its <a
-								href="https://www.w3.org/TR/html/editing.html#the-hidden-attribute"><code>hidden</code>
-								attribute</a> set is also skipped, since hidden elements are not intended to be directly
-							accessed by users.</p>
+								href="https://html.spec.whatwg.org/multipage/interaction.html#the-hidden-attribute"
+									><code>hidden</code> attribute</a> set is also skipped, since hidden elements are
+							not intended to be directly accessed by users.</p>
 						<p>Although these elements can be included in the <code>nav</code> element, care has to be taken
 							not to embed important content within them (e.g., do not wrap a <code>section</code> element
 							around the list item that contains all the links into the content).</p>
@@ -4731,35 +4765,37 @@ dictionary LocalizableString {
 
 				<p>This section defines an algorithm for extracting a table of contents from a <code>nav</code> element.
 					It is defined in terms of a walk over the nodes of a DOM tree, in <a
-						href="https://www.w3.org/TR/html/infrastructure.html#tree-order">tree order</a>, with each node
-					being visited when it is <em>entered</em> and when it is <em>exited</em> during the walk. Each time
-					a node is visited, it can be seen as triggering an <em>enter</em> or <em>exit</em> event. In some
-					steps, user agents are provided a choice in how to process the content to provide flexibility for
-					different presentation models.</p>
+						href="https://dom.spec.whatwg.org/#concept-tree-order">tree order</a>&#160;[[!dom]], with each
+					node being visited when it is <em>entered</em> and when it is <em>exited</em> during the walk. Each
+					time a node is visited, it can be seen as triggering an <em>enter</em> or <em>exit</em> event. In
+					some steps, user agents are provided a choice in how to process the content to provide flexibility
+					for different presentation models.</p>
 
-				<p class="note">User agents can process and internalize the resulting structure in whatever language and
-					form is appropriate.</p>
+				<p class="note">This algorithm is not defined in purely event driven terms, as inspecting all descendant
+					nodes is not always necessary to obtain the needed information from the DOM. In some cases, an
+					element, and all its descendants, is skipped immediately after it is processed on <em>enter</em>. An
+					event approach could be applied, but would require modifying the algorithm to process/ignore the
+					skipped nodes.</p>
+
+
+				<p class="note">User agents can process and internalize the resulting structure using any language that
+					can represent the final form of the data.</p>
 
 				<p>For the purposes of this algorithm, a <dfn>list element</dfn> is defined as either an
-						[[!html]]&#160;<a href="https://www.w3.org/TR/html/grouping-content.html#the-ol-element"
+						[[!html]]&#160;<a
+						href="https://html.spec.whatwg.org/multipage/grouping-content.html#the-ol-element"
 							><code>ol</code></a> or <a
-						href="https://www.w3.org/TR/html/grouping-content.html#the-ul-element"><code>ul</code></a>
-					element.</p>
+						href="https://html.spec.whatwg.org/multipage/grouping-content.html#the-ul-element"
+							><code>ul</code></a> element.</p>
 
-				<p>The following algorithm MUST be applied to a walk of a DOM subtree rooted at the table of contents
-					element determined as follows:</p>
+				<p>The following algorithm MUST be applied to a walk of a DOM subtree rooted at the first element in
+					document order with the <code>role</code> attribute value <code>doc-toc</code>, regardless of
+					whether the element has been <a
+						href="https://html.spec.whatwg.org/multipage/interaction.html#the-hidden-attribute"
+						>declaratively hidden</a>&#160;[[!html]] or styled by CSS not to be visible:</p>
 
-				<ol>
-					<li>
-						<p>if the <code>LinkedResource</code> that identifies the table of contents includes a fragment
-							identifier in its URL, the element referenced by the fragment identifier, provided the
-							element has the <code>role</code> attribute value <code>doc-toc</code>.</p>
-					</li>
-					<li>
-						<p>otherwise, the first element in document order with the <code>role</code> attribute value
-								<code>doc-toc</code>.</p>
-					</li>
-				</ol>
+				<p class="note">The rules for locating the resource containing the table of contents element are defined
+					in <a href="#contents"></a>.</p>
 
 				<p>If a table of contents element is not found, the publication does not have a table of contents that
 					can be used for machine rendering purposes.</p>
@@ -4790,25 +4826,26 @@ dictionary LocalizableString {
 					</li>
 
 					<li id="toc-initialize-current">
-						<p>Let <var>current_toc_branch</var> be a variable set to <a
+						<p>Let <var>current_toc_node</var> be a variable set to <a
 								href="https://infra.spec.whatwg.org/#nulls">null</a>.</p>
 						<details>
 							<summary>Explanation</summary>
-							<p><var>current_toc_branch</var> is used to hold the map that represents the branch of the
+							<p><var>current_toc_node</var> is used to hold the map that represents the branch of the
 								table of contents that is currently being processed.</p>
 						</details>
 					</li>
 
 					<li id="toc-walk-dom">
-						<p>Walk over the DOM in <a href="https://www.w3.org/TR/html/infrastructure.html#tree-order">tree
-								order</a>, starting with the element the table of contents is being built from, and
-							trigger the first relevant step below for each element as the walk enters and exits it.</p>
+						<p>Walk over the DOM in <a href="https://dom.spec.whatwg.org/#concept-tree-order">tree
+							order</a>&#160;[[!dom]], starting with the element the table of contents is being built
+							from, and trigger the first relevant step below for each element as the walk enters and
+							exits it.</p>
 						<ol>
 							<li id="toc-dom-enter-heading">
 								<p>
 									<strong>When entering a <a
-											href="https://www.w3.org/TR/html/dom.html#heading-content-2">heading
-											content</a> element:</strong>
+											href="https://html.spec.whatwg.org/multipage/dom.html#heading-content-2"
+											>heading content</a> element:</strong>
 								</p>
 								<p>Run these steps:</p>
 								<ol>
@@ -4829,7 +4866,7 @@ dictionary LocalizableString {
 											whitespace), set <var>toc["name"]</var> either to a placeholder value or to
 												<a href="https://infra.spec.whatwg.org/#nulls">null</a>.</p>
 									</li>
-									<li>Exit the element and continue processing with the next element.</li>
+									<li>Skip further processing of the element and continue to the next.</li>
 								</ol>
 								<details>
 									<summary>Explanation</summary>
@@ -4871,17 +4908,16 @@ dictionary LocalizableString {
 												>null</a>.</p>
 									</li>
 									<li>
-										<p>If <em>current_toc_branch</em> is not <a
+										<p>If <em>current_toc_node</em> is not <a
 												href="https://infra.spec.whatwg.org/#nulls">null</a>:</p>
 										<ol>
-											<li>If <var>current_toc_branch["entries"]</var> is <a
+											<li>If <var>current_toc_node["entries"]</var> is <a
 													href="https://infra.spec.whatwg.org/#nulls">null</a> or a non-empty
-													<a href="https://infra.spec.whatwg.org/#list">list</a>, exit the
-												element and continue processing with the next element.</li>
+													<a href="https://infra.spec.whatwg.org/#list">list</a>, skip further
+												processing of the element and continue to the next.</li>
 											<li>Otherwise, <a href="https://infra.spec.whatwg.org/#stack-push">push</a>
-												the <a href="https://infra.spec.whatwg.org/#ordered-map">map</a> in
-													<var>current_toc_branch</var> onto <var>branches</var> and set
-													<var>current_toc_branch</var> to <a
+												<var>current_toc_node</var> onto <var>branches</var> and then set
+													<var>current_toc_node</var> to <a
 													href="https://infra.spec.whatwg.org/#nulls">null</a>.</li>
 										</ol>
 									</li>
@@ -4890,8 +4926,8 @@ dictionary LocalizableString {
 										<ol>
 											<li>If <var>toc["entries"]</var> is <a
 													href="https://infra.spec.whatwg.org/#nulls">null</a> or a non-empty
-													<a href="https://infra.spec.whatwg.org/#list">list</a>, exit the
-												element and continue processing with the next element.</li>
+													<a href="https://infra.spec.whatwg.org/#list">list</a>, skip further
+												processing of the element and continue to the next.</li>
 											<li>Otherwise, do nothing.</li>
 										</ol>
 									</li>
@@ -4900,14 +4936,14 @@ dictionary LocalizableString {
 									<summary>Explanation</summary>
 									<p>This algorithm does not process multiple lists in a single branch or at the root
 										of the <code>nav</code> element, so if a list has already been encountered (the
-											<code>entries</code> property contains one or more branches or is set to <a
+											<var>entries</var> property contains one or more branches or is set to <a
 											href="https://infra.spec.whatwg.org/#nulls">null</a>), this list is
 										skipped.</p>
-									<p>If a list is encountered and the table of contents (<code>toc</code>) still does
+									<p>If a list is encountered and the table of contents (<var>toc</var>) still does
 										not have a name (i.e., no heading element has been encountered), the table of
 										contents is assumed to not have a heading (i.e., the heading for the table of
 										contents cannot appear after the first list of entries). The value of the
-											<code>name</code> property is changed from an empty string to <a
+											<var>name</var> property is changed from an empty string to <a
 											href="https://infra.spec.whatwg.org/#nulls">null</a> as no further headings
 										encountered apply, either.</p>
 								</details>
@@ -4917,84 +4953,90 @@ dictionary LocalizableString {
 								<p>
 									<strong>When exiting a <a>list element</a>:</strong>
 								</p>
-								<p>If <var>branches</var> is not empty, <a
-										href="https://infra.spec.whatwg.org/#stack-pop">pop</a> the top <a
-										href="https://infra.spec.whatwg.org/#ordered-map">map</a> from
-										<var>branches</var> and set <var>current_toc_branch</var> to it.</p>
+								<ol>
+									<li>
+										<p>If <var>branches</var> is not empty, <a
+												href="https://infra.spec.whatwg.org/#stack-pop">pop</a> the top <a
+												href="https://infra.spec.whatwg.org/#ordered-map">map</a> from
+												<var>branches</var> and set <var>current_toc_node</var> to it.</p>
+									</li>
+									<li>
+										<p>Otherwise, if <var>toc.entries</var> contains an empty <a
+												href="https://infra.spec.whatwg.org/#list">list</a>, set it to <a
+												href="https://infra.spec.whatwg.org/#nulls">null</a>.</p>
+									</li>
+								</ol>
 								<details>
 									<summary>Explanation</summary>
-									<p>This resets <var>current_toc_branch</var> back to the parent object after all of
-										its child branches have been processed.</p>
+									<p>This step resets <var>current_toc_node</var> back to the parent object after all
+										of its child branches have been processed.</p>
+									<p>If there are no branches in the stack, the <var>toc.entries</var> is set to null
+										if it doesn't contain any items (to avoid processing any further lists at the
+										root level).</p>
 								</details>
 							</li>
 
 							<li id="toc-dom-enter-li">
 								<p>
 									<strong>When entering a <a
-											href="https://www.w3.org/TR/html/grouping-content.html#the-li-element">list
-											item</a> element, set <var>current_toc_branch</var> to the following <a
+											href="https://html.spec.whatwg.org/multipage/grouping-content.html#the-li-element"
+											>list item</a> element, set <var>current_toc_node</var> to the following <a
 											href="https://infra.spec.whatwg.org/#ordered-map">map</a>:</strong>
 								</p>
 								<pre>«[
-    "name" → "",
-    "url"  → "",
-    "type" → "",
-    "rel"  → "",
+    "name" → null,
+    "url"  → null,
+    "type" → null,
+    "rel"  → null,
     "entries" → « »
 ]»</pre>
 								<details>
 									<summary>Explanation</summary>
 									<p>Each list item represents a possible new branch in the table of contents, so
 										whenever one is encountered a new blank object is created in
-											<var>current_toc_branch</var>.</p>
+											<var>current_toc_node</var>.</p>
 									<p>This object gets populated with information as a descendant <code>a</code>
 										element and list are encountered.</p>
 								</details>
 							</li>
 
-							<li id="toc-dom-exist-list">
+							<li id="toc-dom-exit-li">
 								<p>
 									<strong>When exiting a <a
-											href="https://www.w3.org/TR/html/grouping-content.html#the-li-element">list
-											item</a> element:</strong>
+											href="https://html.spec.whatwg.org/multipage/grouping-content.html#the-li-element"
+											>list item</a> element:</strong>
 								</p>
 								<p>Run these steps:</p>
 								<ol>
 									<li>
-										<p>If <var>current_toc_branch["entries"]</var> contains an empty <a
+										<p>If <var>current_toc_node["entries"]</var> contains an empty <a
 												href="https://infra.spec.whatwg.org/#list">list</a>, set it to <a
 												href="https://infra.spec.whatwg.org/#nulls">null</a>.</p>
 									</li>
 									<li>
-										<p>If <var>branches</var> is not empty:</p>
+										<p>If <var>current_toc_node["name"]</var> is an empty string:</p>
 										<ol>
-											<li>if the <var>current_toc_branch["entries"]</var> contains a non-empty <a
-													href="https://infra.spec.whatwg.org/#list">list</a>, and
-													<var>current_toc_branch["name"]</var> is an empty string, set
-													<var>current_toc_branch["name"]</var> to a placeholder value or <a
+											<li>if <var>current_toc_node["entries"]</var> is not <a
+													href="https://infra.spec.whatwg.org/#nulls">null</a>, set
+													<var>current_toc_node["name"]</var> to a placeholder value or <a
 													href="https://infra.spec.whatwg.org/#nulls">null</a>;</li>
-											<li>if the <var>current_toc_branch["entries"]</var> contains an empty <a
-													href="https://infra.spec.whatwg.org/#list">list</a>, and
-													<code>current_toc_branch["name"]</code> is an empty <a
-													href="https://infra.spec.whatwg.org/#string">string</a>, set
-													<var>current_toc_branch</var> to <a
+											<li>otherwise, set <var>current_toc_node</var> to <a
 													href="https://infra.spec.whatwg.org/#nulls">null</a> and exit this
 												processing step.</li>
 										</ol>
-										<p><a href="https://infra.spec.whatwg.org/#list-append">Append</a> the <a
-												href="https://infra.spec.whatwg.org/#ordered-map">map</a> in
-												<var>current_toc_branch</var> to the <var>entries</var> property of the
-												<a href="https://infra.spec.whatwg.org/#ordered-map">map</a> at the top
-											of <var>branches</var>.</p>
 									</li>
 									<li>
-										<p>Otherwise, <a href="https://infra.spec.whatwg.org/#list-append">append</a>
-											the <a href="https://infra.spec.whatwg.org/#ordered-map">map</a> in
-												<var>current_toc_branch</var> to <var>toc["entries"]</var>.</p>
+										<p>If <var>branches</var> is not empty, <a
+												href="https://infra.spec.whatwg.org/#list-append">append</a>
+											<var>current_toc_node</var> to the <var>entries</var> property of the <a
+												href="https://infra.spec.whatwg.org/#ordered-map">map</a> at the top of
+												<var>branches</var>. Otherwise, <a
+												href="https://infra.spec.whatwg.org/#list-append">append</a>
+											<var>current_toc_node</var> to <var>toc["entries"]</var>.</p>
 									</li>
 
 									<li>
-										<p>Set <var>current_toc_branch</var> to <a
+										<p>Set <var>current_toc_node</var> to <a
 												href="https://infra.spec.whatwg.org/#nulls">null</a>.</p>
 									</li>
 								</ol>
@@ -5007,22 +5049,23 @@ dictionary LocalizableString {
 										either supply a placeholder value of its own creation or set the value to null.
 										If it does not have a name or any branches, it is invalid and is discarded.</p>
 									<p>To determine where to merge the branch, the stack is checked. If there are no
-										items in the stack, it is added into the <code>entries</code> property of the
-										root <em>toc</em> object (i.e., it is a top-level branch). Otherwise, it gets
-										added into the <code>entries</code> property of the object immediately preceding
+										items in the stack, it is added into the <var>entries</var> property of the root
+											<em>toc</em> object (i.e., it is a top-level branch). Otherwise, it gets
+										added into the <var>entries</var> property of the object immediately preceding
 										it in the stack.</p>
-									<p>As a final step, <var>current_toc_branch</var> is reset back to
+									<p>As a final step, <var>current_toc_node</var> is reset back to
 										<code>null</code>.</p>
 									<aside class="example" title="Visualization of a branch merge.">
-										<p>If the following two maps are in <var>current_toc_branch</var></p>
+										<p>If the following map is in <var>branches</var>:</p>
 										<pre>«[
     "name"    → "Section 1",
     "url"     → "http://example.com/contents.html#s1",
     "type"    → "text/html",
     "rel"     → null,
     "entries" → « »
-]»,
-«[
+]»</pre>
+										<p>And the following map is in <var>current_toc_node:</var></p>
+										<pre>«[
     "name"    → "Section 1.1",
     "url"     → "http://example.com/contents.html#s1.1",
     "type"    → "text/html",
@@ -5052,22 +5095,21 @@ dictionary LocalizableString {
 							<li id="toc-dom-enter-a">
 								<p>
 									<strong>When entering an <a
-											href="https://www.w3.org/TR/html/textlevel-semantics.html#the-a-element"
-											>anchor</a> element and <var>current_toc_branch</var> is not <a
+											href="https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-a-element"
+											>anchor</a> element and <var>current_toc_node</var> is not <a
 											href="https://infra.spec.whatwg.org/#nulls">null</a>:</strong>
 								</p>
 								<p>Run these steps:</p>
 								<ol>
 									<li>
-										<p>If <var>current_toc_branch["name"]</var> is not an empty <a
-												href="https://infra.spec.whatwg.org/#string">string</a>, do nothing.</p>
+										<p>If <var>current_toc_node["name"]</var> is not <a
+												href="https://infra.spec.whatwg.org/#nulls">null</a>, do nothing.</p>
 									</li>
 									<li>
 										<p>Otherwise:</p>
 										<ol>
 											<li>
-												<p>Set <var>current_toc_branch["name"]</var> to one of the
-													following:</p>
+												<p>Set <var>current_toc_node["name"]</var> to one of the following:</p>
 												<ul>
 													<li>the descendant content of the anchor element (to preserve any
 														HTML tags);</li>
@@ -5077,39 +5119,32 @@ dictionary LocalizableString {
 															>accessible name</a>&#160;[[accname-1.1]] of the
 														element).</li>
 												</ul>
-												<p>If the resulting value of <code>current_toc_branch["name"]</code> is
-													an empty string (e.g., after removing any presentational elements
-													and trimming all leading and trailing whitespace), set
-														<code>current_toc_branch["name"]</code> property to <a
-														href="https://infra.spec.whatwg.org/#nulls">null</a>.</p>
 											</li>
 											<li>If the element has an <code>href</code> attribute and the URL in the
-												attribute resolves to a resource in the <a>default reading order</a> or
-													<a>resource list</a>, set <var>current_toc_branch["url"]</var> to
-												the value. Otherwise, set <var>current_toc_branch["url"]</var> to <a
-													href="https://infra.spec.whatwg.org/#nulls">null</a>.</li>
+												attribute resolves to a resource in <a href="#reslist-end"
+													>uniqueResources</a>, set <var>current_toc_node["url"]</var> to the
+												value.</li>
 											<li>If the element has a <code>type</code> attribute, and the value of the
 												attribute is not an empty string after trimming leading and trailing
-												white space, set <var>current_toc_branch["type"]</var> to the trimmed
-												value. Otherwise, set <var>current_toc_branch["type"]</var> to <a
-													href="https://infra.spec.whatwg.org/#nulls">null</a>.</li>
+												white space, set <var>current_toc_node["type"]</var> to the trimmed
+												value.</li>
 											<li>If the element has a <code>rel</code> attribute, and the value of the
 												attribute is not an empty string after trimming leading and trailing
-												white space, set <var>current_toc_branch["rel"]</var> to the trimmed
-												value. Otherwise, set <var>current_toc_branch["rel"]</var> to <a
-													href="https://infra.spec.whatwg.org/#nulls">null</a>.</li>
+												white space, split the trimmed value on whitespace and set
+													<var>current_toc_node["rel"]</var> to the resulting <a
+													href="https://infra.spec.whatwg.org/#list">list</a> of tokens.</li>
 										</ol>
-										<p>Exit the element and continue processing with the next element.</p>
+										<p>Skip further processing of the element and continue to the next.</p>
 									</li>
 								</ol>
 								<details>
 									<summary>Explanation</summary>
-									<p>This step processes anchor tags to obtain values for the <code>name</code> and
-											<code>url</code> properties of a branch.</p>
+									<p>This step processes anchor tags to obtain values for the <var>name</var> and
+											<var>url</var> properties of a branch.</p>
 									<p>If the name of the current branch is already defined, then processing of this
 										element is terminated (i.e., to avoid processing multiple links for a single
 										branch).</p>
-									<p>Whether a user agent sets the <code>name</code> of the entry to the descendant
+									<p>Whether a user agent sets the <var>name</var> of the entry to the descendant
 										content of the <code>a</code> element, or generates a text string from it,
 										depends on whether it will re-use any descendant tagging in the presentation
 										(e.g., to retain images, MathML, ruby and other content that does not translate
@@ -5133,14 +5168,14 @@ dictionary LocalizableString {
 							<li id="toc-dom-enter-sectioning">
 								<p>
 									<strong>When entering a <a
-											href="https://www.w3.org/TR/html/dom.html#sectioning-content-2">sectioning
-											content</a> element, a <a
-											href="https://www.w3.org/TR/html/sections.html#sectioning-roots">sectioning
-											root</a> element, or an element with a <a
-											href="https://www.w3.org/TR/html/editing.html#element-attrdef-global-hidden"
+											href="https://html.spec.whatwg.org/multipage/dom.html#sectioning-content-2"
+											>sectioning content</a> element, a <a
+											href="https://html.spec.whatwg.org/multipage/sections.html#sectioning-root"
+											>sectioning root</a> element, or an element with a <a
+											href="https://html.spec.whatwg.org/multipage/interaction.html#the-hidden-attribute"
 											>hidden</a> attribute:</strong>
 								</p>
-								<p>Exit the element and continue processing with the next element.</p>
+								<p>Skip further processing of the element and continue to the next.</p>
 								<details>
 									<summary>Explanation</summary>
 									<p>As sectioning and sectioning root elements can define their own outlines,
@@ -5166,10 +5201,8 @@ dictionary LocalizableString {
 
 					<li id="toc-finish">
 						<p>After completing the DOM walk, if <var>toc["entries"]</var> contains a non-empty <a
-								href="https://infra.spec.whatwg.org/#list">list</a>, <var>toc</var> represents the
-							machine-processed table of contents.</p>
-						<p>Otherwise, the digital publication does not have a table of contents that can be used for
-							machine rendering purposes.</p>
+								href="https://infra.spec.whatwg.org/#list">list</a>, return <var>toc</var>. Otherwise,
+							return <code>null</code>.</p>
 						<details>
 							<summary>Explanation</summary>
 							<p>If the <code>entries</code> array in the root <em>toc</em> object does not contain any
@@ -5181,13 +5214,39 @@ dictionary LocalizableString {
 				</ol>
 			</section>
 		</section>
+		<section id="change-log">
+			<h2>Change Log</h2>
+
+			<section>
+				<h3>Changes since Candidate Recommendation</h3>
+				<p>The following substantive changes have been made since the last release:</p>
+				<ul>
+					<li>28-Jan-2020: Reverted to using only role=doc-toc to identify the table of contents due to
+						problems with using fragments identifiers. See issue <a
+							href="https://github.com/w3c/pub-manifest/issues/176">176</a>.</li>
+					<li>28-Jan-2020: Clarified that visual hiding does not affect the selection of the table of
+						contents. See issue <a href="https://github.com/w3c/pub-manifest/issues/176">176</a>.</li>
+					<li>28-Jan-2020: Added an extension point for profiles to add processing requirements for the
+						context. See issue <a href="https://github.com/w3c/pub-manifest/issues/186">186</a>.</li>
+					<li>27-Jan-2020: The table of contents processing algorithm has been updated to fix several bugs and
+						editorial issues in the expected outcomes. See issues <a
+							href="https://github.com/w3c/pub-manifest/issues/177">177</a> and <a
+							href="https://github.com/w3c/pub-manifest/issues/179">179</a>, as well as pull requests <a
+							href="https://github.com/w3c/pub-manifest/pull/180">180</a> and <a
+							href="https://github.com/w3c/pub-manifest/pull/182">182</a> for more details.</li>
+				</ul>
+				<p>For a complete list of issues addressed, refer to the <a
+						href="https://github.com/w3c/pub-manifest/issues?q=is%3Aissue+is%3Aclosed+sort%3Aupdated-desc"
+						>GitHub tracker</a>.</p>
+			</section>
+		</section>
 		<section id="iana-consideration" class="appendix informative">
 			<h2>IANA considerations</h2>
 
 			<section>
 				<h3>Link relation type registration</h3>
-				<p class="note"> A request to register the <code>manifest</code> link relation type will be submitted to
-					IANA. </p>
+				<p class="note"> A request to register the <code>publication</code> link relation type will be submitted
+					to IANA. </p>
 				<dl>
 					<dt>Relation Name:</dt>
 					<dd>publication</dd>
@@ -5238,7 +5297,7 @@ dictionary LocalizableString {
 				<h3>Audiobook</h3>
 
 				<p>The following example shows a manifest that conforms to the <a
-						href="https://www.w3.org/TR/audiobooks">Audiobooks profile</a> [[audiobooks]].</p>
+						href="https://www.w3.org/TR/audiobooks/">Audiobooks profile</a> [[audiobooks]].</p>
 
 				<p>A <a href="https://w3c.github.io/pub-manifest/experiments/audiobook/flatland-canonical.json">JSON
 						encoding of the internal representation</a> of this manifest is also available.</p>
@@ -5556,7 +5615,7 @@ dictionary LocalizableString {
 							<code>contents</code>
 						</td>
 						<td>
-							<a href="#pub-table-of-contents"></a>
+							<a href="#contents"></a>
 						</td>
 					</tr>
 					<tr>

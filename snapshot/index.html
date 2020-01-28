@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US">
 	<head>
 		<meta charset="utf-8" />
-		<meta name="generator" content="ReSpec 24.34.1" />
+		<meta name="generator" content="ReSpec 25.1.0" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 		<style>
 			/* ---  EXAMPLES  --- */
@@ -97,6 +97,7 @@
 				position: relative;
 				bottom: 2px;
 				border: none;
+				display: inline-block;
 			}
 			
 			.issue a.respec-label-dark {
@@ -107,6 +108,73 @@
 			.issue a.respec-label-light {
 				color: #000;
 				background-color: #fff;
+			}</style>
+		<style>
+			/* dfn popup panel that list all local references to a dfn */
+			dfn {
+				cursor: pointer;
+			}
+			
+			.dfn-panel {
+				position: absolute;
+				left: var(--left); /* set via JS */
+				top: var(--top); /* set via JS */
+				z-index: 35;
+				height: auto;
+				width: max-content;
+				max-width: 300px;
+				max-height: 500px;
+				overflow: auto;
+				padding: 0.5em 0.75em;
+				font: small Helvetica Neue, sans-serif, Droid Sans Fallback;
+				background: #dddddd;
+				color: black;
+				border: outset 0.2em;
+			}
+			
+			.dfn-panel * {
+				margin: 0;
+			}
+			
+			.dfn-panel > b {
+				display: block;
+			}
+			
+			.dfn-panel ul a[href] {
+				color: black;
+			}
+			
+			.dfn-panel a:not(:hover) {
+				text-decoration: none !important;
+				border-bottom: none !important;
+			}
+			
+			.dfn-panel a[href]:hover {
+				border-bottom-width: 1px;
+			}
+			
+			.dfn-panel > b + b {
+				margin-top: 0.25em;
+			}
+			
+			.dfn-panel ul {
+				padding: 0;
+			}
+			
+			.dfn-panel li {
+				list-style: inside;
+			}
+			
+			.dfn-panel.docked {
+				display: inline-block;
+				position: fixed;
+				left: 0.5em;
+				top: unset;
+				bottom: 2em;
+				margin: 0 auto;
+				/* 0.75em from padding (x2), 0.5em from left position, 0.2em border (x2) */
+				max-width: calc(100vw - 0.75em * 2 - 0.5em - 0.2em * 2);
+				max-height: 30vh;
 			}</style>
 
 		<title>Publication Manifest</title>
@@ -127,10 +195,8 @@
 			}</style>
 		<style id="respec-mainstyle">
 			/*****************************************************************
- * ReSpec 3 CSS
- * Robin Berjon - http://berjon.com/
+ * ReSpec specific CSS
  *****************************************************************/
-			
 			@keyframes pop {
   0% {
     transform: scale(1, 1);
@@ -414,98 +480,93 @@
 					display: none;
 				}
 			}</style>
+		<meta name="description"
+			content="This specification defines a general manifest format for expressing information about a digital
+				publication. It uses [schema.org] metadata augmented to include various structural properties about
+				publications, serialized in [json-ld11], to enable interoperability between publishing formats while
+				accommodating variances in the information that needs to be expressed." />
 		<link rel="canonical" href="https://www.w3.org/TR/pub-manifest/" />
 		<style>
 			/*
-
-github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
-
+Atom One Light by Daniel Gamage
+Original One Light Syntax theme from https://github.com/atom/one-light-syntax
+base:    #fafafa
+mono-1:  #383a42
+mono-2:  #686b77
+mono-3:  #a0a1a7
+hue-1:   #0184bb
+hue-2:   #4078f2
+hue-3:   #a626a4
+hue-4:   #50a14f
+hue-5:   #e45649
+hue-5-2: #c91243
+hue-6:   #986801
+hue-6-2: #c18401
 */
 			
 			.hljs {
 				display: block;
 				overflow-x: auto;
 				padding: 0.5em;
-				color: #333;
-				background: #f8f8f8;
+				color: #383a42;
+				background: #fafafa;
 			}
 			
 			.hljs-comment,
 			.hljs-quote {
-				color: #998;
+				color: #a0a1a7;
 				font-style: italic;
 			}
 			
+			.hljs-doctag,
 			.hljs-keyword,
-			.hljs-selector-tag,
-			.hljs-subst {
-				color: #333;
-				font-weight: bold;
+			.hljs-formula {
+				color: #a626a4;
 			}
 			
-			.hljs-number,
-			.hljs-literal,
-			.hljs-variable,
-			.hljs-template-variable,
-			.hljs-tag .hljs-attr {
-				color: #008080;
+			.hljs-section,
+			.hljs-name,
+			.hljs-selector-tag,
+			.hljs-deletion,
+			.hljs-subst {
+				color: #e45649;
+			}
+			
+			.hljs-literal {
+				color: #0184bb;
 			}
 			
 			.hljs-string,
-			.hljs-doctag {
-				color: #d14;
-			}
-			
-			.hljs-title,
-			.hljs-section,
-			.hljs-selector-id {
-				color: #900;
-				font-weight: bold;
-			}
-			
-			.hljs-subst {
-				font-weight: normal;
-			}
-			
-			.hljs-type,
-			.hljs-class .hljs-title {
-				color: #458;
-				font-weight: bold;
-			}
-			
-			.hljs-tag,
-			.hljs-name,
-			.hljs-attribute {
-				color: #000080;
-				font-weight: normal;
-			}
-			
 			.hljs-regexp,
-			.hljs-link {
-				color: #009926;
-			}
-			
-			.hljs-symbol,
-			.hljs-bullet {
-				color: #990073;
+			.hljs-addition,
+			.hljs-attribute,
+			.hljs-meta-string {
+				color: #50a14f;
 			}
 			
 			.hljs-built_in,
-			.hljs-builtin-name {
-				color: #0086b3;
+			.hljs-class .hljs-title {
+				color: #c18401;
 			}
 			
-			.hljs-meta {
-				color: #999;
-				font-weight: bold;
+			.hljs-attr,
+			.hljs-variable,
+			.hljs-template-variable,
+			.hljs-type,
+			.hljs-selector-class,
+			.hljs-selector-attr,
+			.hljs-selector-pseudo,
+			.hljs-number {
+				color: #986801;
 			}
 			
-			.hljs-deletion {
-				background: #fdd;
-			}
-			
-			.hljs-addition {
-				background: #dfd;
+			.hljs-symbol,
+			.hljs-bullet,
+			.hljs-link,
+			.hljs-meta,
+			.hljs-selector-id,
+			.hljs-title {
+				color: #4078f2;
 			}
 			
 			.hljs-emphasis {
@@ -514,6 +575,10 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 			
 			.hljs-strong {
 				font-weight: bold;
+			}
+			
+			.hljs-link {
+				text-decoration: underline;
 			}</style>
 		<style>
 			var {
@@ -591,14 +656,14 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
         },
         {
             "type": "LinkedResource",
-            "url": "https://www.w3.org/StyleSheets/TR/2016/W3C-WD",
+            "url": "https://www.w3.org/StyleSheets/TR/2016/W3C-CR",
             "rel": "stylesheet",
             "encodingFormat": "text/css",
             "description": "CSS file depending on the status of the document"
         },
         {
             "type": "LinkedResource",
-            "url": "https://www.w3.org/StyleSheets/TR/2016/logos/WD",
+            "url": "https://www.w3.org/StyleSheets/TR/2016/logos/CR",
             "encodingFormat": "image/svg+xml",
             "description": "Sidebar logo reflecting the status of the document"
         }
@@ -624,8 +689,8 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
         }
     ],
     "id": "https://www.w3.org/TR/pub-manifest/",
-    "url": "https://www.w3.org/TR/2019/WD-pub-manifest-20191118/",
-    "datePublished": "2019-11-18",
+    "url": "https://www.w3.org/TR/2020/CR-pub-manifest-20200128/",
+    "datePublished": "2020-01-28",
     "editor": [
         {
             "type": "Person",
@@ -633,7 +698,7 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
             "affiliation": {
                 "type": "Organization",
                 "name": "DAISY Consortium",
-                "url": "http://www.daisy.org"
+                "url": "https://daisy.org"
             }
         },
         {
@@ -658,16 +723,18 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
     null
   ],
   "wg": "Publishing Working Group",
-  "specStatus": "WD",
+  "specStatus": "CR",
   "shortName": "pub-manifest",
-  "previousPublishDate": "2019-09-11",
-  "previousMaturity": "WD",
+  "previousPublishDate": "2019-12-05",
+  "previousMaturity": "CR",
+  "implementationReportURI": "https://www.w3.org/publishing/groups/publ-wg/implementation/results.html",
+  "crEnd": "2020-03-31",
   "edDraftURI": "https://w3c.github.io/pub-manifest/",
   "editors": [
     {
       "name": "Matt Garrish",
       "company": "DAISY Consortium",
-      "companyURL": "http://www.daisy.org",
+      "companyURL": "https://daisy.org",
       "w3cid": 51655
     },
     {
@@ -801,7 +868,7 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
     },
     "onix": {
       "title": "ONIX for Books",
-      "href": "http://www.editeur.org/83/Overview",
+      "href": "https://www.editeur.org/83/Overview",
       "id": "onix"
     },
     "bibtex": {
@@ -811,7 +878,7 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
     },
     "webschemas-a11y": {
       "title": "WebSchemas Accessibility",
-      "href": "http://www.w3.org/wiki/WebSchemas/Accessibility",
+      "href": "https://www.w3.org/wiki/WebSchemas/Accessibility",
       "id": "webschemas-a11y"
     },
     "mfrel": {
@@ -820,29 +887,24 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
       "id": "mfrel"
     }
   },
-  "publishDate": "2019-11-18",
-  "publishISODate": "2019-11-18T00:00:00.000Z",
-  "generatedSubtitle": "Working Draft 18 November 2019"
+  "publishDate": "2020-01-28",
+  "publishISODate": "2020-01-28T00:00:00.000Z",
+  "generatedSubtitle": "Candidate Recommendation 28 January 2020"
 }</script>
-		<meta name="description"
-			content="This specification defines a general manifest format for expressing information about a digital
-				publication. It uses [schema.org] metadata augmented to include various structural properties about
-				publications, serialized in [json-ld11], to enable interoperability between publishing formats while
-				accommodating variances in the information that needs to be expressed." />
-		<link rel="stylesheet" href="https://www.w3.org/StyleSheets/TR/2016/W3C-WD" />
+		<link rel="stylesheet" href="https://www.w3.org/StyleSheets/TR/2016/W3C-CR" />
 	</head>
 	<body class="h-entry"><div class="head">
 			<a class="logo" href="https://www.w3.org/"><img alt="W3C"
 					src="https://www.w3.org/StyleSheets/TR/2016/logos/W3C" width="72" height="48" /></a>
 			<h1 id="title" class="title p-name">Publication Manifest</h1>
 
-			<h2> W3C Working Draft <time class="dt-published" datetime="2019-11-18">18 November 2019</time>
+			<h2> W3C Candidate Recommendation <time class="dt-published" datetime="2020-01-28">28 January 2020</time>
 			</h2>
 			<dl>
 				<dt>This version:</dt>
 				<dd>
-					<a class="u-url" href="https://www.w3.org/TR/2019/WD-pub-manifest-20191118/"
-						>https://www.w3.org/TR/2019/WD-pub-manifest-20191118/</a>
+					<a class="u-url" href="https://www.w3.org/TR/2020/CR-pub-manifest-20200128/"
+						>https://www.w3.org/TR/2020/CR-pub-manifest-20200128/</a>
 				</dd>
 				<dt>Latest published version:</dt>
 				<dd>
@@ -851,16 +913,19 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 				<dt>Latest editor's draft:</dt>
 				<dd><a href="https://w3c.github.io/pub-manifest/">https://w3c.github.io/pub-manifest/</a></dd>
 
-
-
+				<dt>Implementation report:</dt>
+				<dd>
+					<a href="https://www.w3.org/publishing/groups/publ-wg/implementation/results.html"
+						>https://www.w3.org/publishing/groups/publ-wg/implementation/results.html</a>
+				</dd>
 
 				<dt>Previous version:</dt>
-				<dd><a href="https://www.w3.org/TR/2019/WD-pub-manifest-20190911/"
-						>https://www.w3.org/TR/2019/WD-pub-manifest-20190911/</a></dd>
+				<dd><a href="https://www.w3.org/TR/2019/CR-pub-manifest-20191205/"
+						>https://www.w3.org/TR/2019/CR-pub-manifest-20191205/</a></dd>
 
 				<dt>Editors:</dt>
 				<dd class="p-author h-card vcard" data-editor-id="51655"><span class="p-name fn">Matt Garrish</span> (<a
-						class="p-org org h-org h-card" href="http://www.daisy.org">DAISY Consortium</a>) </dd>
+						class="p-org org h-org h-card" href="https://daisy.org">DAISY Consortium</a>) </dd>
 				<dd class="p-author h-card vcard" data-editor-id="7382"><a class="u-url url p-name fn"
 						href="https://www.w3.org/People/Ivan/">Ivan Herman</a><a class="p-name orcid"
 						href="https://orcid.org/0000-0003-0782-2704"><svg width="16" height="16"
@@ -896,7 +961,7 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 
 
 			<p class="copyright">
-				<a href="https://www.w3.org/Consortium/Legal/ipr-notice#Copyright">Copyright</a> © 2019 <a
+				<a href="https://www.w3.org/Consortium/Legal/ipr-notice#Copyright">Copyright</a> © 2020 <a
 					href="https://www.w3.org/"><abbr title="World Wide Web Consortium">W3C</abbr></a><sup>®</sup> (<a
 					href="https://www.csail.mit.edu/"><abbr title="Massachusetts Institute of Technology"
 				>MIT</abbr></a>, <a href="https://www.ercim.eu/"><abbr
@@ -911,10 +976,10 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 		<section id="abstract" class="introductory">
 			<h2>Abstract</h2>
 			<p>This specification defines a general manifest format for expressing information about a digital
-				publication. It uses [<cite><a class="bibref" href="#bib-schema.org" title="Schema.org"
-						data-link-type="biblio">schema.org</a></cite>] metadata augmented to include various structural
-				properties about publications, serialized in [<cite><a class="bibref" href="#bib-json-ld11"
-						title="JSON-LD 1.1" data-link-type="biblio">json-ld11</a></cite>], to enable interoperability
+				publication. It uses [<cite><a class="bibref" data-link-type="biblio" href="#bib-schema.org"
+						title="Schema.org">schema.org</a></cite>] metadata augmented to include various structural
+				properties about publications, serialized in [<cite><a class="bibref" data-link-type="biblio"
+						href="#bib-json-ld11" title="JSON-LD 1.1">json-ld11</a></cite>], to enable interoperability
 				between publishing formats while accommodating variances in the information that needs to be
 				expressed.</p>
 		</section>
@@ -926,16 +991,25 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 						href="https://www.w3.org/TR/"><abbr title="World Wide Web Consortium">W3C</abbr> technical
 						reports index</a> at https://www.w3.org/TR/.</em></p>
 			<p> This document was published by the <a href="https://www.w3.org/publishing/groups/publ-wg/">Publishing
-					Working Group</a> as a Working Draft. This document is intended to become a <abbr
+					Working Group</a> as a Candidate Recommendation. This document is intended to become a <abbr
 					title="World Wide Web Consortium">W3C</abbr> Recommendation. </p>
 			<p>
 				<a href="https://github.com/w3c/pub-manifest/issues/">GitHub Issues</a> are preferred for discussion of
 				this specification. Alternatively, you can send comments to our mailing list. Please send them to <a
 					href="mailto:public-publ-wg@w3.org">public-publ-wg@w3.org</a> (<a
 					href="https://lists.w3.org/Archives/Public/public-publ-wg/">archives</a>). </p>
-			<p> Publication as a Working Draft does not imply endorsement by the <abbr title="World Wide Web Consortium"
-					>W3C</abbr> Membership. This is a draft document and may be updated, replaced or obsoleted by other
-				documents at any time. It is inappropriate to cite this document as other than work in progress. </p>
+			<p>
+				<abbr title="World Wide Web Consortium">W3C</abbr> publishes a Candidate Recommendation to indicate that
+				the document is believed to be stable and to encourage implementation by the developer community. This
+				Candidate Recommendation is expected to advance to Proposed Recommendation no earlier than 31 March
+				2020. </p>
+			<p> Please see the Working Group's <a
+					href="https://www.w3.org/publishing/groups/publ-wg/implementation/results.html">implementation
+					report</a>. </p>
+			<p> Publication as a Candidate Recommendation does not imply endorsement by the <abbr
+					title="World Wide Web Consortium">W3C</abbr> Membership. This is a draft document and may be
+				updated, replaced or obsoleted by other documents at any time. It is inappropriate to cite this document
+				as other than work in progress. </p>
 			<p> This document was produced by a group operating under the <a
 					href="https://www.w3.org/Consortium/Patent-Policy/"><abbr title="World Wide Web Consortium"
 						>W3C</abbr> Patent Policy</a>. <abbr title="World Wide Web Consortium">W3C</abbr> maintains a <a
@@ -1063,8 +1137,8 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 												</bdi>Cover</a></li>
 										<li class="tocline"><a class="tocxref" href="#page-list"><bdi class="secno"
 													>4.8.1.2 </bdi>Page List</a></li>
-										<li class="tocline"><a class="tocxref" href="#pub-table-of-contents"><bdi
-													class="secno">4.8.1.3 </bdi>Table of Contents</a></li>
+										<li class="tocline"><a class="tocxref" href="#contents"><bdi class="secno"
+													>4.8.1.3 </bdi>Table of Contents</a></li>
 									</ol></li>
 								<li class="tocline"><a class="tocxref" href="#informative-rel"><bdi class="secno">4.8.2
 										</bdi>Informative Resources</a><ol class="toc">
@@ -1155,30 +1229,35 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 						<li class="tocline"><a class="tocxref" href="#app-toc-ua"><bdi class="secno">C.3 </bdi>User
 								Agent Processing</a></li>
 					</ol></li>
-				<li class="tocline"><a class="tocxref" href="#iana-consideration"><bdi class="secno">D. </bdi>IANA
+				<li class="tocline"><a class="tocxref" href="#change-log"><bdi class="secno">D. </bdi>Change Log</a><ol
+						class="toc">
+						<li class="tocline"><a class="tocxref" href="#changes-since-candidate-recommendation"><bdi
+									class="secno">D.1 </bdi>Changes since Candidate Recommendation</a></li>
+					</ol></li>
+				<li class="tocline"><a class="tocxref" href="#iana-consideration"><bdi class="secno">E. </bdi>IANA
 						considerations</a><ol class="toc">
 						<li class="tocline"><a class="tocxref" href="#link-relation-type-registration"><bdi
-									class="secno">D.1 </bdi>Link relation type registration</a></li>
+									class="secno">E.1 </bdi>Link relation type registration</a></li>
 					</ol></li>
-				<li class="tocline"><a class="tocxref" href="#app-manifest-examples"><bdi class="secno">E.
+				<li class="tocline"><a class="tocxref" href="#app-manifest-examples"><bdi class="secno">F.
 						</bdi>Manifest Examples</a><ol class="toc">
-						<li class="tocline"><a class="tocxref" href="#basic-manifest"><bdi class="secno">E.1 </bdi>Basic
+						<li class="tocline"><a class="tocxref" href="#basic-manifest"><bdi class="secno">F.1 </bdi>Basic
 								Manifest</a></li>
 						<li class="tocline"><a class="tocxref" href="#single-document-publication"><bdi class="secno"
-									>E.2 </bdi>Single-Document Publication</a></li>
-						<li class="tocline"><a class="tocxref" href="#audiobook"><bdi class="secno">E.3
+									>F.2 </bdi>Single-Document Publication</a></li>
+						<li class="tocline"><a class="tocxref" href="#audiobook"><bdi class="secno">F.3
 								</bdi>Audiobook</a></li>
 					</ol></li>
-				<li class="tocline"><a class="tocxref" href="#app-properties-index"><bdi class="secno">F.
+				<li class="tocline"><a class="tocxref" href="#app-properties-index"><bdi class="secno">G.
 						</bdi>Properties Index</a></li>
-				<li class="tocline"><a class="tocxref" href="#app-rel-index"><bdi class="secno">G. </bdi>Resource
+				<li class="tocline"><a class="tocxref" href="#app-rel-index"><bdi class="secno">H. </bdi>Resource
 						Relations Index</a></li>
-				<li class="tocline"><a class="tocxref" href="#ack"><bdi class="secno">H. </bdi>Acknowledgements</a></li>
-				<li class="tocline"><a class="tocxref" href="#references"><bdi class="secno">I. </bdi>References</a><ol
+				<li class="tocline"><a class="tocxref" href="#ack"><bdi class="secno">I. </bdi>Acknowledgements</a></li>
+				<li class="tocline"><a class="tocxref" href="#references"><bdi class="secno">J. </bdi>References</a><ol
 						class="toc">
-						<li class="tocline"><a class="tocxref" href="#normative-references"><bdi class="secno">I.1
+						<li class="tocline"><a class="tocxref" href="#normative-references"><bdi class="secno">J.1
 								</bdi>Normative references</a></li>
-						<li class="tocline"><a class="tocxref" href="#informative-references"><bdi class="secno">I.2
+						<li class="tocline"><a class="tocxref" href="#informative-references"><bdi class="secno">J.2
 								</bdi>Informative references</a></li>
 					</ol></li>
 			</ol></nav>
@@ -1212,10 +1291,10 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 				<p>A <a href="#dfn-digital-publications" class="internalDFN" data-link-type="dfn">digital
 						publication</a> is described by its <a href="#dfn-manifests" class="internalDFN"
 						data-link-type="dfn">manifest</a>, which provides a set of properties expressed using a specific
-					shape of JSON-LD&#160;[<cite><a class="bibref" href="#bib-json-ld11" title="JSON-LD 1.1"
-							data-link-type="biblio">json-ld11</a></cite>] (a variant of JSON&#160;[<cite><a
-							class="bibref" href="#bib-ecma-404" title="The JSON Data Interchange Format"
-							data-link-type="biblio">ecma-404</a></cite>] for linked data).</p>
+					shape of JSON-LD&#160;[<cite><a class="bibref" data-link-type="biblio" href="#bib-json-ld11"
+							title="JSON-LD 1.1">json-ld11</a></cite>] (a variant of JSON&#160;[<cite><a class="bibref"
+							data-link-type="biblio" href="#bib-ecma-404" title="The JSON Data Interchange Format"
+							>ecma-404</a></cite>] for linked data).</p>
 
 				<p>The manifest is what enables user agents to understand the <a href="#dfn-bounds" class="internalDFN"
 						data-link-type="dfn">bounds</a> of <a href="#dfn-digital-publications" class="internalDFN"
@@ -1284,7 +1363,7 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 						Processing<a class="self-link" aria-label="§" href="#manifest-jsonld"></a></h3>
 
 				<p>This specification defines the publication manifest as a specific "shape" of [<cite><a class="bibref"
-							href="#bib-json-ld11" title="JSON-LD 1.1" data-link-type="biblio">json-ld11</a></cite>].
+							data-link-type="biblio" href="#bib-json-ld11" title="JSON-LD 1.1">json-ld11</a></cite>].
 					This means that the manifest <em class="rfc2119" title="SHOULD">SHOULD</em> be expressed using only
 					the syntactic constructions defined in this specification, as opposed to all the possibilities
 					offered by the JSON-LD syntax.</p>
@@ -1294,10 +1373,10 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 						<span>Note</span>
 					</div>
 					<p class="">This shape is also defined, informally, through a JSON schema&#160;[<cite><a
-								class="bibref" href="#bib-json-schema"
-								title="JSON Schema: core definitions and terminology" data-link-type="biblio"
-								>json-schema</a></cite>] that expresses the constraints defined in this specification.
-						This schema is maintained at <a href="https://github.com/w3c/pub-manifest/blob/master/schema/"
+								class="bibref" data-link-type="biblio" href="#bib-json-schema"
+								title="JSON Schema: core definitions and terminology">json-schema</a></cite>] that
+						expresses the constraints defined in this specification. This schema is maintained at <a
+							href="https://github.com/w3c/pub-manifest/blob/master/schema/"
 							>https://github.com/w3c/pub-manifest/blob/master/schema/</a>.</p>
 				</div>
 
@@ -1322,7 +1401,7 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 				<p>Manifest properties, in particular those categorized as <a href="#descriptive-properties">descriptive
 						properties</a>, are primarily drawn from <a href="https://schema.org">Schema.org</a> and its <a
 						href="https://schema.org/docs/schemas.html">hosted extensions</a>&#160;[<cite><a class="bibref"
-							href="#bib-schema.org" title="Schema.org" data-link-type="biblio">schema.org</a></cite>]. As
+							data-link-type="biblio" href="#bib-schema.org" title="Schema.org">schema.org</a></cite>]. As
 					a consequence, these properties inherit their syntax and semantics from Schema.org, making manifest
 					authoring compatible with Schema.org authoring.</p>
 
@@ -1340,8 +1419,8 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 						href="#publication-types">type of publication</a> specified in the manifest. Properties are
 					often available in many Schema.org types, as a result of the inheritance model used by the
 					vocabulary, but not all properties are available for all types. For more detailed information about
-					which types accept which properties, refer to [<cite><a class="bibref" href="#bib-schema.org"
-							title="Schema.org" data-link-type="biblio">schema.org</a></cite>].</p>
+					which types accept which properties, refer to [<cite><a class="bibref" data-link-type="biblio"
+							href="#bib-schema.org" title="Schema.org">schema.org</a></cite>].</p>
 
 				<p>More information about using additional Schema.org properties is also available in <a
 						href="#publication-types" class="sec-ref">§&#160;<bdi class="secno">4.5 </bdi>Publication
@@ -1353,8 +1432,8 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 			<h2 id="x2-terminology"><bdi class="secno">2. </bdi>Terminology<a class="self-link" aria-label="§"
 					href="#terminology"></a></h2>
 
-			<p>This specification depends on the Infra Standard [<cite><a class="bibref" href="#bib-infra"
-						title="Infra Standard" data-link-type="biblio">infra</a></cite>].</p>
+			<p>This specification depends on the Infra Standard [<cite><a class="bibref" data-link-type="biblio"
+						href="#bib-infra" title="Infra Standard">infra</a></cite>].</p>
 
 			<dl>
 				<dt>
@@ -1423,11 +1502,11 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 					NOT</em>, <em class="rfc2119">OPTIONAL</em>, <em class="rfc2119">RECOMMENDED</em>, <em
 					class="rfc2119">REQUIRED</em>, <em class="rfc2119">SHOULD</em>, and <em class="rfc2119">SHOULD
 					NOT</em> in this document are to be interpreted as described in <a
-					href="https://tools.ietf.org/html/bcp14">BCP 14</a> [<cite><a class="bibref" href="#bib-rfc2119"
-						title="Key words for use in RFCs to Indicate Requirement Levels" data-link-type="biblio"
-						>RFC2119</a></cite>] [<cite><a class="bibref" href="#bib-rfc8174"
-						title="Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words" data-link-type="biblio"
-						>RFC8174</a></cite>] when, and only when, they appear in all capitals, as shown here. </p>
+					href="https://tools.ietf.org/html/bcp14">BCP 14</a> [<cite><a class="bibref" data-link-type="biblio"
+						href="#bib-rfc2119" title="Key words for use in RFCs to Indicate Requirement Levels"
+					>RFC2119</a></cite>] [<cite><a class="bibref" data-link-type="biblio" href="#bib-rfc8174"
+						title="Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words">RFC8174</a></cite>] when, and
+				only when, they appear in all capitals, as shown here. </p>
 			<p>All algorithm explanations are <em>informative</em>.</p>
 		</section>
 		<section id="manifest">
@@ -1489,10 +1568,9 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 					<p>When a <a href="#manifest-properties">manifest</a> property expects a literal text string — one
 						that is not language-dependent, such as a code value or date — as its value, the value <em
 							class="rfc2119" title="MUST">MUST</em> be expressed as a [<cite><a class="bibref"
-								href="#bib-json"
+								data-link-type="biblio" href="#bib-json"
 								title="The application/json Media Type for JavaScript Object Notation (JSON)"
-								data-link-type="biblio">json</a></cite>] <a
-							href="https://tools.ietf.org/html/rfc4627#section-2.5">string</a>.</p>
+							>json</a></cite>] <a href="https://tools.ietf.org/html/rfc4627#section-2.5">string</a>.</p>
 
 					<p>Literal values are not changed <a href="#manifest-processing">during processing of the
 							manifest</a>, unlike other values which might be, for example, <a
@@ -1505,10 +1583,9 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 
 					<p>When a <a href="#manifest-properties">manifest</a> property expects a number as its value, the
 						value <em class="rfc2119" title="MUST">MUST</em> be expressed as a [<cite><a class="bibref"
-								href="#bib-json"
+								data-link-type="biblio" href="#bib-json"
 								title="The application/json Media Type for JavaScript Object Notation (JSON)"
-								data-link-type="biblio">json</a></cite>] <a
-							href="https://tools.ietf.org/html/rfc4627#section-2.4">number</a>.</p>
+							>json</a></cite>] <a href="https://tools.ietf.org/html/rfc4627#section-2.4">number</a>.</p>
 				</section>
 
 				<section id="value-boolean">
@@ -1517,7 +1594,7 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 
 					<p>When a <a href="#manifest-properties">manifest</a> property expects a boolean as its value, the
 						value <em class="rfc2119" title="MUST">MUST</em> be expressed as an [<cite><a class="bibref"
-								href="#bib-ecmascript" title="ECMAScript Language Specification" data-link-type="biblio"
+								data-link-type="biblio" href="#bib-ecmascript" title="ECMAScript Language Specification"
 								>ecmascript</a></cite>]&#160;<a
 							href="https://tc39.es/ecma262/#sec-terms-and-definitions-boolean-value">Boolean value</a>
 							(<code>true</code> or <code>false</code>).</p>
@@ -1528,14 +1605,13 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 							Objects<a class="self-link" aria-label="§" href="#explicit-implied-objects"></a></h4>
 
 					<p>Various manifest properties are expected to be expressed as [<cite><a class="bibref"
-								href="#bib-json"
+								data-link-type="biblio" href="#bib-json"
 								title="The application/json Media Type for JavaScript Object Notation (JSON)"
-								data-link-type="biblio">json</a></cite>]&#160;<a
-							href="https://tools.ietf.org/html/rfc4627#section-2.2">objects</a>. Although the use of
-						explicit objects is usually advised, the following sections identify cases where it is also
-						acceptable to use string values. These strings are automatically translated into objects during
-							<a href="#manifest-processing">processing of the manifest</a> by a user agent (the exact
-						mapping of text values to objects is included in each definition).</p>
+							>json</a></cite>]&#160;<a href="https://tools.ietf.org/html/rfc4627#section-2.2"
+						>objects</a>. Although the use of explicit objects is usually advised, the following sections
+						identify cases where it is also acceptable to use string values. These strings are automatically
+						translated into objects during <a href="#manifest-processing">processing of the manifest</a> by
+						a user agent (the exact mapping of text values to objects is included in each definition).</p>
 
 					<section id="value-localizable-string">
 						<h5 id="x4-2-4-1-localizable-strings"><bdi class="secno">4.2.4.1 </bdi>Localizable Strings<a
@@ -1546,10 +1622,10 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 							of:</p>
 
 						<ul>
-							<li>a [<cite><a class="bibref" href="#bib-json"
+							<li>a [<cite><a class="bibref" data-link-type="biblio" href="#bib-json"
 										title="The application/json Media Type for JavaScript Object Notation (JSON)"
-										data-link-type="biblio">json</a></cite>] <a
-									href="https://tools.ietf.org/html/rfc4627#section-2.5">string</a> value;</li>
+										>json</a></cite>] <a href="https://tools.ietf.org/html/rfc4627#section-2.5"
+									>string</a> value;</li>
 							<li>a <a href="#dfn-localizablestrings" class="internalDFN" data-link-type="dfn"
 											><code><code>LocalizableString</code></code></a>; or</li>
 							<li>an <a href="#value-array">Array</a> of <a href="#dfn-localizablestrings"
@@ -1568,11 +1644,11 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 
 						<p>A <dfn data-lt="LocalizableStrings|localizable string|LocalizableString" data-dfn-type="dfn"
 								data-plurals="localizablestrings" id="dfn-localizablestrings"
-									><code>LocalizableString</code></dfn> is a [<cite><a class="bibref" href="#bib-json"
+									><code>LocalizableString</code></dfn> is a [<cite><a class="bibref"
+									data-link-type="biblio" href="#bib-json"
 									title="The application/json Media Type for JavaScript Object Notation (JSON)"
-									data-link-type="biblio">json</a></cite>]&#160;<a
-								href="https://tools.ietf.org/html/rfc4627#section-2.2">object</a> consisting of the
-							following properties:</p>
+									>json</a></cite>]&#160;<a href="https://tools.ietf.org/html/rfc4627#section-2.2"
+								>object</a> consisting of the following properties:</p>
 
 						<table class="zebra">
 							<thead>
@@ -1581,8 +1657,8 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 									<th>Description</th>
 									<th>Required Value</th>
 									<th>Value Category</th>
-									<th>[<cite><a class="bibref" href="#bib-schema.org" title="Schema.org"
-												data-link-type="biblio">schema.org</a></cite>] Mapping</th>
+									<th>[<cite><a class="bibref" data-link-type="biblio" href="#bib-schema.org"
+												title="Schema.org">schema.org</a></cite>] Mapping</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -1603,8 +1679,8 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 									<td>The language of the value. <em class="rfc2119" title="OPTIONAL"
 										>OPTIONAL</em>.</td>
 									<td>A <a href="https://tools.ietf.org/html/bcp47#section-2.2.9">well-formed language
-											tag</a>&#160;[<cite><a class="bibref" href="#bib-bcp47"
-												title="Tags for Identifying Languages" data-link-type="biblio"
+											tag</a>&#160;[<cite><a class="bibref" data-link-type="biblio"
+												href="#bib-bcp47" title="Tags for Identifying Languages"
 											>bcp47</a></cite>].</td>
 									<td><a href="#value-literal">Literal</a></td>
 									<td>(None)</td>
@@ -1633,8 +1709,9 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 
 						<p> A missing base direction value means that that the textual value is explicitly directionally
 							set to the direction of the first character with a strong directionality, following the
-							rules of the Unicode Bidirectional Algorithm&#160;[<cite><a class="bibref" href="#bib-bidi"
-									title="Unicode Bidirectional Algorithm" data-link-type="biblio">bidi</a></cite>]. </p>
+							rules of the Unicode Bidirectional Algorithm&#160;[<cite><a class="bibref"
+									data-link-type="biblio" href="#bib-bidi" title="Unicode Bidirectional Algorithm"
+									>bidi</a></cite>]. </p>
 
 						<aside class="example" id="example-1-set-the-language-of-a-string">
 							<div class="marker">
@@ -1667,17 +1744,16 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 							<div class="">
 								<p> If the base direction value were not set in the last example, the text would be
 									displayed, following the Unicode Bidirectional Algorithm&#160;[<cite><a
-											class="bibref" href="#bib-bidi" title="Unicode Bidirectional Algorithm"
-											data-link-type="biblio">bidi</a></cite>] and due to the presence of a Latin
-									character starting the string, as: </p>
+											class="bibref" data-link-type="biblio" href="#bib-bidi"
+											title="Unicode Bidirectional Algorithm">bidi</a></cite>] and due to the
+									presence of a Latin character starting the string, as: </p>
 								<p dir="ltr">HTML היא שפת סימון.</p>
 								<p> However, that would be incorrect. The extra <code>direction</code> value is
 									necessary to control the display to yield: </p>
 								<p dir="rtl">HTML היא שפת סימון.</p>
-								<p>See also the [<cite><a class="bibref" href="#bib-string-meta"
+								<p>See also the [<cite><a class="bibref" data-link-type="biblio" href="#bib-string-meta"
 											title="Requirements for Language and Direction Metadata in Data Formats"
-											data-link-type="biblio">string-meta</a></cite>] document for further
-									explanations and examples.</p>
+											>string-meta</a></cite>] document for further explanations and examples.</p>
 							</div>
 						</div>
 
@@ -1693,10 +1769,10 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 								class="rfc2119" title="MUST">MUST</em> be expressed either as:</p>
 
 						<ul>
-							<li>a [<cite><a class="bibref" href="#bib-json"
+							<li>a [<cite><a class="bibref" data-link-type="biblio" href="#bib-json"
 										title="The application/json Media Type for JavaScript Object Notation (JSON)"
-										data-link-type="biblio">json</a></cite>] <a
-									href="https://tools.ietf.org/html/rfc4627#section-2.5">string</a> value; or</li>
+										>json</a></cite>] <a href="https://tools.ietf.org/html/rfc4627#section-2.5"
+									>string</a> value; or</li>
 							<li>an <a href="#dfn-entities" class="internalDFN" data-link-type="dfn"
 									><code>Entity</code></a>.</li>
 						</ul>
@@ -1704,12 +1780,12 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 						<p>A single string value represents an instance of an <code>Entity</code> object whose
 								<code>name</code> property is the string's text and whose <code>type</code> is assumed
 							to be <a href="https://schema.org/Person">Person</a>&#160;[<cite><a class="bibref"
-									href="#bib-schema.org" title="Schema.org" data-link-type="biblio"
+									data-link-type="biblio" href="#bib-schema.org" title="Schema.org"
 								>schema.org</a></cite>].</p>
 
 						<p>An <dfn data-lt="Entities|Entity" data-dfn-type="dfn" id="dfn-entities">Entity</dfn> is
-							defined as an instance of either the [<cite><a class="bibref" href="#bib-schema.org"
-									title="Schema.org" data-link-type="biblio">schema.org</a></cite>] <a
+							defined as an instance of either the [<cite><a class="bibref" data-link-type="biblio"
+									href="#bib-schema.org" title="Schema.org">schema.org</a></cite>] <a
 								href="https://schema.org/Person"><code>Person</code></a> or <a
 								href="https://schema.org/Organization"><code>Organization</code></a> type with the
 							following minimal property set:</p>
@@ -1721,8 +1797,8 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 									<th>Description</th>
 									<th>Required Value</th>
 									<th>Value Category</th>
-									<th>[<cite><a class="bibref" href="#bib-schema.org" title="Schema.org"
-												data-link-type="biblio">schema.org</a></cite>] Mapping</th>
+									<th>[<cite><a class="bibref" data-link-type="biblio" href="#bib-schema.org"
+												title="Schema.org">schema.org</a></cite>] Mapping</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -1760,8 +1836,8 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 									</td>
 									<td>A canonical identifier associated with the creator. <em class="rfc2119"
 											title="OPTIONAL">OPTIONAL</em>.</td>
-									<td>A URL record&#160;[<cite><a class="bibref" href="#bib-url" title="URL Standard"
-												data-link-type="biblio">url</a></cite>].</td>
+									<td>A URL record&#160;[<cite><a class="bibref" data-link-type="biblio"
+												href="#bib-url" title="URL Standard">url</a></cite>].</td>
 									<td>
 										<a href="#value-id">Identifier</a>
 									</td>
@@ -1773,8 +1849,8 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 									</td>
 									<td>An address associated with the creator. <em class="rfc2119" title="OPTIONAL"
 											>OPTIONAL</em>.</td>
-									<td>A valid URL string&#160;[<cite><a class="bibref" href="#bib-url"
-												title="URL Standard" data-link-type="biblio">url</a></cite>].</td>
+									<td>A valid URL string&#160;[<cite><a class="bibref" data-link-type="biblio"
+												href="#bib-url" title="URL Standard">url</a></cite>].</td>
 									<td>
 										<a href="#value-url">URL</a>
 									</td>
@@ -1808,8 +1884,8 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 								<span>Note</span>
 							</div>
 							<p class="">This minimal set of properties is not restrictive. Authors can include any
-								additional properties defined for the [<cite><a class="bibref" href="#bib-schema.org"
-										title="Schema.org" data-link-type="biblio">schema.org</a></cite>] <a
+								additional properties defined for the [<cite><a class="bibref" data-link-type="biblio"
+										href="#bib-schema.org" title="Schema.org">schema.org</a></cite>] <a
 									href="https://schema.org/Person"><code>Person</code></a> or <a
 									href="https://schema.org/Organization"><code>Organization</code></a> types, as
 								appropriate. User agents are similarly not limited to interpreting only the preceding
@@ -1852,12 +1928,11 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 								>MUST</em> be expressed either as:</p>
 
 						<ol>
-							<li>a [<cite><a class="bibref" href="#bib-json"
+							<li>a [<cite><a class="bibref" data-link-type="biblio" href="#bib-json"
 										title="The application/json Media Type for JavaScript Object Notation (JSON)"
-										data-link-type="biblio">json</a></cite>] <a
-									href="https://tools.ietf.org/html/rfc4627#section-2.5">string</a> encoding the <a
-									href="#dfn-url" class="internalDFN" data-link-type="dfn">URL</a> of the resources;
-								or</li>
+										>json</a></cite>] <a href="https://tools.ietf.org/html/rfc4627#section-2.5"
+									>string</a> encoding the <a href="#dfn-url" class="internalDFN" data-link-type="dfn"
+									>URL</a> of the resources; or</li>
 							<li>an instance of a <a href="#dfn-linkedresources" class="internalDFN" data-link-type="dfn"
 											><code><code>LinkedResource</code></code></a>.</li>
 						</ol>
@@ -1876,8 +1951,8 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 									<th>Description</th>
 									<th>Required Value</th>
 									<th>Value Category</th>
-									<th>[<cite><a class="bibref" href="#bib-schema.org" title="Schema.org"
-												data-link-type="biblio">schema.org</a></cite>] Mapping</th>
+									<th>[<cite><a class="bibref" data-link-type="biblio" href="#bib-schema.org"
+												title="Schema.org">schema.org</a></cite>] Mapping</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -1899,9 +1974,9 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 									</td>
 									<td>Location of the resource. <em class="rfc2119" title="REQUIRED"
 										>REQUIRED</em>.</td>
-									<td>A valid URL string&#160;[<cite><a class="bibref" href="#bib-url"
-												title="URL Standard" data-link-type="biblio">url</a></cite>]. Refer to
-										the property definitions that accept this type for additional restrictions.</td>
+									<td>A valid URL string&#160;[<cite><a class="bibref" data-link-type="biblio"
+												href="#bib-url" title="URL Standard">url</a></cite>]. Refer to the
+										property definitions that accept this type for additional restrictions.</td>
 									<td>
 										<a href="#value-url">URL</a>
 									</td>
@@ -1917,9 +1992,10 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 									</td>
 									<td>Media type of the resource (e.g., <code>text/html</code>). <em class="rfc2119"
 											title="OPTIONAL">OPTIONAL</em>.</td>
-									<td>MIME Media Type&#160;[<cite><a class="bibref" href="#bib-rfc2046"
+									<td>MIME Media Type&#160;[<cite><a class="bibref" data-link-type="biblio"
+												href="#bib-rfc2046"
 												title="Multipurpose Internet Mail Extensions (MIME) Part Two: Media Types"
-												data-link-type="biblio">rfc2046</a></cite>].</td>
+												>rfc2046</a></cite>].</td>
 									<td>
 										<a href="#value-literal">Literal</a>
 									</td>
@@ -1984,16 +2060,14 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 										verified. <em class="rfc2119" title="OPTIONAL">OPTIONAL</em>.</td>
 									<td><p>One or more whitespace-separated sets of <a
 												href="https://www.w3.org/TR/SRI/#dfn-integrity-metadata">integrity
-												metadata</a>&#160;[<cite><a class="bibref" href="#bib-sri"
-													title="Subresource Integrity" data-link-type="biblio"
-											>sri</a></cite>]. The value <em class="rfc2119" title="MUST">MUST</em>
-											conform to the <a href="https://www.w3.org/TR/SRI/#the-integrity-attribute"
-												>metadata definition</a>&#160;[<cite><a class="bibref" href="#bib-sri"
-													title="Subresource Integrity" data-link-type="biblio"
-											>sri</a></cite>].</p>
-										<p>Refer to [<cite><a class="bibref" href="#bib-sri"
-													title="Subresource Integrity" data-link-type="biblio"
-											>sri</a></cite>] for the <a
+												metadata</a>&#160;[<cite><a class="bibref" data-link-type="biblio"
+													href="#bib-sri" title="Subresource Integrity">sri</a></cite>]. The
+											value <em class="rfc2119" title="MUST">MUST</em> conform to the <a
+												href="https://www.w3.org/TR/SRI/#the-integrity-attribute">metadata
+												definition</a>&#160;[<cite><a class="bibref" data-link-type="biblio"
+													href="#bib-sri" title="Subresource Integrity">sri</a></cite>].</p>
+										<p>Refer to [<cite><a class="bibref" data-link-type="biblio" href="#bib-sri"
+													title="Subresource Integrity">sri</a></cite>] for the <a
 												href="https://www.w3.org/TR/SRI/#cryptographic-hash-functions">list of
 												cryptographic hashing functions</a> that user agents are expected to
 											support.</p>
@@ -2009,9 +2083,10 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 									</td>
 									<td>Overall duration of a time-based media resource. <em class="rfc2119"
 											title="OPTIONAL">OPTIONAL</em></td>
-									<td>Duration value as defined by&#160;[<cite><a class="bibref" href="#bib-iso8601"
+									<td>Duration value as defined by&#160;[<cite><a class="bibref"
+												data-link-type="biblio" href="#bib-iso8601"
 												title="Representation of dates and times. ISO 8601:2004."
-												data-link-type="biblio">iso8601</a></cite>].</td>
+											>iso8601</a></cite>].</td>
 									<td>
 										<a href="#value-literal">Literal</a>
 									</td>
@@ -2051,8 +2126,8 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 						<p>Although user agent support for the <code>integrity</code> property is <em class="rfc2119"
 								title="OPTIONAL">OPTIONAL</em>, user agents that support cryptographic hashing
 							comparisons using this property <em class="rfc2119" title="MUST">MUST</em> do so in
-							accordance with [<cite><a class="bibref" href="#bib-sri" title="Subresource Integrity"
-									data-link-type="biblio">sri</a></cite>].</p>
+							accordance with [<cite><a class="bibref" data-link-type="biblio" href="#bib-sri"
+									title="Subresource Integrity">sri</a></cite>].</p>
 
 						<p>This specification only defines the <code>alternate</code> property for selecting from
 							alternative formats (i.e., based on <code>encodingFormat</code> or by inspecting <abbr
@@ -2103,7 +2178,7 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
         {
             <span class="hljs-attr">"type"</span>: <span class="hljs-string">"LinkedResource"</span>,
             <span class="hljs-attr">"url"</span>: <span class="hljs-string">"chapter1.json"</span>,
-            <span class="hljs-attr">"encodingFormat"</span>: <span class="hljs-string">"application/vnd.wp-sync-media+json"</span>,
+            <span class="hljs-attr">"encodingFormat"</span>: <span class="hljs-string">"application/vnd.syncnarr+json"</span>,
             <span class="hljs-attr">"duration"</span>: <span class="hljs-string">"PT1669S"</span>
         }
     ]
@@ -2150,11 +2225,10 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 						<p>When a manifest property expects a type of object not defined in this section, or by a <a
 								href="#dfn-profiles" class="internalDFN" data-link-type="dfn">profile</a>, it <em
 								class="rfc2119" title="MUST">MUST</em> be expressed as a [<cite><a class="bibref"
-									href="#bib-json"
+									data-link-type="biblio" href="#bib-json"
 									title="The application/json Media Type for JavaScript Object Notation (JSON)"
-									data-link-type="biblio">json</a></cite>] <a
-								href="https://tools.ietf.org/html/rfc4627#section-2.2">object</a> (i.e., the property's
-							value will not be processed to create an object).</p>
+									>json</a></cite>] <a href="https://tools.ietf.org/html/rfc4627#section-2.2"
+								>object</a> (i.e., the property's value will not be processed to create an object).</p>
 					</section>
 				</section>
 
@@ -2167,14 +2241,14 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 						associated with a <a href="#dfn-digital-publications" class="internalDFN" data-link-type="dfn"
 							>digital publication</a>. When a property expects a URL value, it <em class="rfc2119"
 							title="MUST">MUST</em> be a <a href="https://url.spec.whatwg.org/#absolute-url-string">valid
-							URL string</a>&#160;[<cite><a class="bibref" href="#bib-url" title="URL Standard"
-								data-link-type="biblio">url</a></cite>].</p>
+							URL string</a>&#160;[<cite><a class="bibref" data-link-type="biblio" href="#bib-url"
+								title="URL Standard">url</a></cite>].</p>
 
 					<p>In the case of <a href="https://url.spec.whatwg.org/#relative-url-string">relative-URL
 							strings</a>, these are resolved to <a
 							href="https://url.spec.whatwg.org/#absolute-url-string">absolute-URL strings</a> using a <a
 							href="https://url.spec.whatwg.org/#concept-base-url">base URL</a>&#160;[<cite><a
-								class="bibref" href="#bib-url" title="URL Standard" data-link-type="biblio"
+								class="bibref" data-link-type="biblio" href="#bib-url" title="URL Standard"
 							>url</a></cite>].</p>
 
 					<p>The <dfn data-dfn-type="dfn" id="dfn-base-url">base URL</dfn> for relative-URL strings is
@@ -2184,7 +2258,7 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 						<li>In the case of an <a href="#manifest-embed">embedded manifest</a>, it is the <a
 								href="https://www.w3.org/TR/json-ld11/#inheriting-base-iri-from-html-s-base-element"
 								>document base URL of the embedding document</a>&#160;[<cite><a class="bibref"
-									href="#bib-json-ld11" title="JSON-LD 1.1" data-link-type="biblio"
+									data-link-type="biblio" href="#bib-json-ld11" title="JSON-LD 1.1"
 								>json-ld11</a></cite>].</li>
 						<li>In the case of a <a href="#manifest-link">linked manifest</a>, it is the URL of the manifest
 							resource.</li>
@@ -2194,20 +2268,8 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 
 					<p>By consequence, relative-URL strings in embedded manifests are resolved against the URL of the
 						document that references the manifest <em>unless</em> the document declares a base URL (i.e., in
-						a <a href="https://html.spec.whatwg.org/multipage/#the-base-element"><code>&lt;base&gt;</code>
-							element</a> in its header).</p>
-
-					<div class="note" role="note" id="issue-container-generatedID-4">
-						<div role="heading" class="note-title marker" id="h-note-4" aria-level="5">
-							<span>Note</span>
-						</div>
-						<p class=""><abbr title="Uniform Resource Locators">URLs</abbr> allow for the usage of
-							characters from Unicode following&#160;[<cite><a class="bibref" href="#bib-rfc3987"
-									title="Internationalized Resource Identifiers (IRIs)" data-link-type="biblio"
-									>rfc3987</a></cite>]. See <a
-								href="https://www.w3.org/TR/html/references.html#biblio-url">the note in the HTML5
-								specification</a> for further details.</p>
-					</div>
+						a <a href="https://html.spec.whatwg.org/multipage/semantics.html#the-base-element"
+								><code>&lt;base&gt;</code> element</a> in its header).</p>
 				</section>
 
 				<section id="value-id">
@@ -2225,7 +2287,7 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 
 					<p>Identifiers <em class="rfc2119" title="MUST">MUST</em> be expressed as <a
 							href="https://url.spec.whatwg.org/#concept-url">URL records</a>&#160;[<cite><a
-								class="bibref" href="#bib-url" title="URL Standard" data-link-type="biblio"
+								class="bibref" data-link-type="biblio" href="#bib-url" title="URL Standard"
 							>url</a></cite>]</p>
 				</section>
 
@@ -2236,12 +2298,11 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 					<p>When a <a href="#manifest-properties">manifest property</a> allows one or more value of their
 						respective type (e.g., <a href="#value-literal">literal</a>, <a href="#explicit-implied-objects"
 							>object</a>, or <a href="#value-url">URL</a>), these values are expressed as [<cite><a
-								class="bibref" href="#bib-json"
+								class="bibref" data-link-type="biblio" href="#bib-json"
 								title="The application/json Media Type for JavaScript Object Notation (JSON)"
-								data-link-type="biblio">json</a></cite>] <a
-							href="https://tools.ietf.org/html/rfc4627#section-2.3">arrays</a>. When a property value is
-						a single element, however, the array syntax <em class="rfc2119" title="MAY">MAY</em> be
-						omitted.</p>
+							>json</a></cite>] <a href="https://tools.ietf.org/html/rfc4627#section-2.3">arrays</a>. When
+						a property value is a single element, however, the array syntax <em class="rfc2119" title="MAY"
+							>MAY</em> be omitted.</p>
 
 					<aside class="example" id="example-7-using-a-text-string-instead-of-an-array">
 						<div class="marker">
@@ -2274,15 +2335,25 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 
 				<p>A <a href="#dfn-manifests" class="internalDFN" data-link-type="dfn">manifest</a>
 					<em class="rfc2119" title="MUST">MUST</em> set its JSON-LD context&#160;[<cite><a class="bibref"
-							href="#bib-json-ld11" title="JSON-LD 1.1" data-link-type="biblio">json-ld11</a></cite>] with
+							data-link-type="biblio" href="#bib-json-ld11" title="JSON-LD 1.1">json-ld11</a></cite>] with
 					the following two components, in the specified order:</p>
 
 				<ol>
-					<li>the [<cite><a class="bibref" href="#bib-schema.org" title="Schema.org" data-link-type="biblio"
+					<li>the [<cite><a class="bibref" data-link-type="biblio" href="#bib-schema.org" title="Schema.org"
 								>schema.org</a></cite>] context: <code>https://schema.org</code></li>
 					<li>the <dfn data-dfn-type="dfn" id="dfn-publication-context">publication context</dfn>:
 							<code>https://www.w3.org/ns/pub-context</code></li>
 				</ol>
+
+				<div class="note" role="note" id="issue-container-generatedID-4">
+					<div role="heading" class="note-title marker" id="h-note-4" aria-level="4">
+						<span>Note</span>
+					</div>
+					<p class="">Although Schema.org is often referenced using the <code>http</code> URI scheme, <a
+							href="https://schema.org/docs/faq.html#19">the vocabulary is being migrated</a> to use the
+						secure <code>https</code> scheme as its default. As a result, only the <code>https</code> scheme
+						is recognized in the publication manifest context.</p>
+				</div>
 
 				<div class="example" id="example-8-setting-the-context-declaration">
 					<div class="marker">
@@ -2302,11 +2373,11 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 					requirement for the <a href="https://schema.org/creator">creator</a> property to be order
 					preserving).</p>
 
-				<p>Although Schema.org is often referenced using the <code>http</code> URI scheme, <a
-						href="https://schema.org/docs/faq.html#19">the vocabulary is being migrated</a> to use the
-					secure <code>https</code> scheme as its default. The use of <code>https</code> when referencing
-					Schema.org in the manifest is <em class="rfc2119" title="REQUIRED">REQUIRED</em> by this
-					specification.</p>
+				<p><a href="#dfn-profiles" class="internalDFN" data-link-type="dfn">Profiles</a> of this specification
+						<em class="rfc2119" title="MAY">MAY</em> require additional context <abbr
+						title="Uniform Resource Locators">URLs</abbr>, but such <abbr title="Uniform Resource Locators"
+						>URLs</abbr>
+					<em class="rfc2119" title="MUST">MUST</em> be ordered after these two components.</p>
 
 				<p>The context can be extended by including additional paramaters — such as the <a
 						href="#manifest-context">global language and direction declarations</a> — in an object following
@@ -2349,11 +2420,11 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 						<span>Note</span>
 					</div>
 					<p class=""> The ability to set the base direction is a JSON-LD&#160;1.1&#160;[<cite><a
-								class="bibref" href="#bib-json-ld11" title="JSON-LD 1.1" data-link-type="biblio"
+								class="bibref" data-link-type="biblio" href="#bib-json-ld11" title="JSON-LD 1.1"
 								>json-ld11</a></cite>] feature. In other words, the Publication Manifest has a
 						dependency on that version of the JSON-LD specification (as opposed to the earlier
-								1.0&#160;[<cite><a class="bibref" href="#bib-json-ld10" title="JSON-LD 1.0"
-								data-link-type="biblio">json-ld10</a></cite>] version). </p>
+								1.0&#160;[<cite><a class="bibref" data-link-type="biblio" href="#bib-json-ld10"
+								title="JSON-LD 1.0">json-ld10</a></cite>] version). </p>
 				</div>
 
 				<section id="manifest-lang-dir-global">
@@ -2365,18 +2436,18 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 							href="https://w3c.github.io/json-ld-syntax/#syntax-tokens-and-keywords"
 								><code>language</code></a> and <a
 							href="https://w3c.github.io/json-ld-syntax/#syntax-tokens-and-keywords"
-								><code>direction</code></a> keywords&#160;[<cite><a class="bibref" href="#bib-json-ld11"
-								title="JSON-LD 1.1" data-link-type="biblio">json-ld11</a></cite>], respectively. These
-						values are used to expand simple string values into <a href="#value-localizable-string"
-							>localizable strings</a> during the <a href="#manifest-processing">processing of the
-							manifest</a>, as well as to provide a language and the base direction for localizable
-						strings that omit one.</p>
+								><code>direction</code></a> keywords&#160;[<cite><a class="bibref"
+								data-link-type="biblio" href="#bib-json-ld11" title="JSON-LD 1.1">json-ld11</a></cite>],
+						respectively. These values are used to expand simple string values into <a
+							href="#value-localizable-string">localizable strings</a> during the <a
+							href="#manifest-processing">processing of the manifest</a>, as well as to provide a language
+						and the base direction for localizable strings that omit one.</p>
 
 					<p>The value of <code>language</code>
 						<em class="rfc2119" title="MUST">MUST</em> be a <a
 							href="https://tools.ietf.org/html/bcp47#section-2.2.9">well-formed language
-								tag</a>&#160;[<cite><a class="bibref" href="#bib-bcp47"
-								title="Tags for Identifying Languages" data-link-type="biblio">bcp47</a></cite>].</p>
+								tag</a>&#160;[<cite><a class="bibref" data-link-type="biblio" href="#bib-bcp47"
+								title="Tags for Identifying Languages">bcp47</a></cite>].</p>
 
 					<p>The value of <code>direction</code>
 						<em class="rfc2119" title="MUST">MUST</em> have one of the following values:</p>
@@ -2501,7 +2572,7 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
         {
             <span class="hljs-string">"value"</span>: <span class="hljs-string">"HTML و CSS: تصميم و إنشاء مواقع الويب"</span>,
             <span class="hljs-string">"direction"</span>: <span class="hljs-string">"rtl"</span>
-        }
+        },
         {
             <span class="hljs-string">"value"</span>    : <span class="hljs-string">"HTML and CSS: Design and Build Websites"</span>,
             <span class="hljs-string">"language"</span> : <span class="hljs-string">"en"</span>
@@ -2524,11 +2595,11 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 							href="https://w3c.github.io/json-ld-syntax/#syntax-tokens-and-keywords"
 								><code>language</code></a> and <a
 							href="https://w3c.github.io/json-ld-syntax/#syntax-tokens-and-keywords"
-								><code>direction</code></a> keywords&#160;[<cite><a class="bibref" href="#bib-json-ld11"
-								title="JSON-LD 1.1" data-link-type="biblio">json-ld11</a></cite>] are the same as for
-						the <a href="#manifest-lang-dir-global">global declaration</a>. Furthermore, both values can
-						also be the (JSON) value of <code>null</code>, indicating that no explicit language,
-						respectively direction, is set. </p>
+								><code>direction</code></a> keywords&#160;[<cite><a class="bibref"
+								data-link-type="biblio" href="#bib-json-ld11" title="JSON-LD 1.1">json-ld11</a></cite>]
+						are the same as for the <a href="#manifest-lang-dir-global">global declaration</a>. Furthermore,
+						both values can also be the (JSON) value of <code>null</code>, indicating that no explicit
+						language, respectively direction, is set. </p>
 
 					<div class="note" role="note" id="issue-container-generatedID-7">
 						<div role="heading" class="note-title marker" id="h-note-7" aria-level="5">
@@ -2553,10 +2624,10 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 						publication's</a>
 					<a href="#dfn-manifests" class="internalDFN" data-link-type="dfn">manifest</a> defines its <dfn
 						data-dfn-type="dfn" id="dfn-publication-type">Publication Type</dfn> using the <code>type</code>
-							keyword&#160;[<cite><a class="bibref" href="#bib-json-ld11" title="JSON-LD 1.1"
-							data-link-type="biblio">json-ld11</a></cite>]. The type <em class="rfc2119" title="MAY"
-						>MAY</em> be mapped onto any [<cite><a class="bibref" href="#bib-schema.org" title="Schema.org"
-							data-link-type="biblio">schema.org</a></cite>] type, but <a
+							keyword&#160;[<cite><a class="bibref" data-link-type="biblio" href="#bib-json-ld11"
+							title="JSON-LD 1.1">json-ld11</a></cite>]. The type <em class="rfc2119" title="MAY">MAY</em>
+					be mapped onto any [<cite><a class="bibref" data-link-type="biblio" href="#bib-schema.org"
+							title="Schema.org">schema.org</a></cite>] type, but <a
 						href="https://schema.org/CreativeWork"><code>CreativeWork</code></a> is <a href="#validate-type"
 						>assumed as the default</a> when no type is specified.</p>
 
@@ -2644,8 +2715,8 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 							<th>Description</th>
 							<th>Required Value</th>
 							<th>Value Category</th>
-							<th>[<cite><a class="bibref" href="#bib-dcterms" title="DCMI Metadata Terms"
-										data-link-type="biblio">dcterms</a></cite>] Mapping</th>
+							<th>[<cite><a class="bibref" data-link-type="biblio" href="#bib-dcterms"
+										title="DCMI Metadata Terms">dcterms</a></cite>] Mapping</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -2655,11 +2726,12 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 							</td>
 							<td>URL of the profile.</td>
 							<td>An <a href="https://url.spec.whatwg.org/#absolute-url-with-fragment-string"
-									>absolute-URL-with-fragment string</a>&#160;[<cite><a class="bibref" href="#bib-url"
-										title="URL Standard" data-link-type="biblio">url</a></cite>].</td>
+									>absolute-URL-with-fragment string</a>&#160;[<cite><a class="bibref"
+										data-link-type="biblio" href="#bib-url" title="URL Standard"
+								>url</a></cite>].</td>
 							<td><a href="#value-array">Array</a> of <a href="#value-literal">Literals</a></td>
 							<td><a
-									href="https://www.dublincore.org/specifications/dublin-core/dcmi-terms/#terms-conformsTo"
+									href="https://www.dublincore.org/specifications/dublin-core/dcmi-terms/#http://purl.org/dc/terms/conformsTo"
 									>conformsTo</a></td>
 						</tr>
 					</tbody>
@@ -2672,9 +2744,9 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 						<span>Note</span>
 					</div>
 					<p class="">The <code>conformsTo</code> property can also be used to indicate conformance to other
-						specifications and standards (e.g., to [<cite><a class="bibref" href="#bib-wcag21"
-								title="Web Content Accessibility Guidelines (WCAG) 2.1" data-link-type="biblio"
-								>WCAG21</a></cite>]).</p>
+						specifications and standards (e.g., to [<cite><a class="bibref" data-link-type="biblio"
+								href="#bib-wcag21" title="Web Content Accessibility Guidelines (WCAG) 2.1"
+							>wcag21</a></cite>]).</p>
 				</div>
 
 				<div class="example"
@@ -2688,7 +2760,7 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 					</div>
 					<pre aria-busy="false"><code class="hljs javascript">{
     …
-    <span class="hljs-string">"conformsTo"</span> : <span class="hljs-string">"https://www.w3.org/TR/audiobooks"</span>,
+    <span class="hljs-string">"conformsTo"</span> : <span class="hljs-string">"https://www.w3.org/TR/audiobooks/"</span>,
     …
 }</code></pre>
 				</div>
@@ -2717,8 +2789,8 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 									<th>Description</th>
 									<th>Required Value</th>
 									<th>Value Category</th>
-									<th>[<cite><a class="bibref" href="#bib-schema.org" title="Schema.org"
-												data-link-type="biblio">schema.org</a></cite>] Mapping</th>
+									<th>[<cite><a class="bibref" data-link-type="biblio" href="#bib-schema.org"
+												title="Schema.org">schema.org</a></cite>] Mapping</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -2758,8 +2830,8 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 								href="#dfn-digital-publications" class="internalDFN" data-link-type="dfn">digital
 								publication</a> for consumption by users with different preferred reading modalities.
 							These properties typically supplement an evaluation against established accessibility
-							criteria, such as those provided in [<cite><a class="bibref" href="#bib-wcag21"
-									title="Web Content Accessibility Guidelines (WCAG) 2.1" data-link-type="biblio"
+							criteria, such as those provided in [<cite><a class="bibref" data-link-type="biblio"
+									href="#bib-wcag21" title="Web Content Accessibility Guidelines (WCAG) 2.1"
 									>wcag21</a></cite>].</p>
 
 						<p>The following properties are categorized as accessibility properties:</p>
@@ -2771,8 +2843,8 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 									<th>Description</th>
 									<th>Required Value</th>
 									<th>Value Category</th>
-									<th>[<cite><a class="bibref" href="#bib-schema.org" title="Schema.org"
-												data-link-type="biblio">schema.org</a></cite>] Mapping</th>
+									<th>[<cite><a class="bibref" data-link-type="biblio" href="#bib-schema.org"
+												title="Schema.org">schema.org</a></cite>] Mapping</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -2859,8 +2931,8 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 								<span>Note</span>
 							</div>
 							<p class="">Detailed descriptions of these properties, including the expected values to use
-								with them, are available at [<cite><a class="bibref" href="#bib-webschemas-a11y"
-										title="WebSchemas Accessibility" data-link-type="biblio"
+								with them, are available at [<cite><a class="bibref" data-link-type="biblio"
+										href="#bib-webschemas-a11y" title="WebSchemas Accessibility"
 									>webschemas-a11y</a></cite>].</p>
 						</div>
 
@@ -2919,8 +2991,8 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 									<th>Description</th>
 									<th>Required Value</th>
 									<th>Value Category</th>
-									<th>[<cite><a class="bibref" href="#bib-schema.org" title="Schema.org"
-												data-link-type="biblio">schema.org</a></cite>] Mapping</th>
+									<th>[<cite><a class="bibref" data-link-type="biblio" href="#bib-schema.org"
+												title="Schema.org">schema.org</a></cite>] Mapping</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -2929,8 +3001,8 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 										<code>url</code>
 									</td>
 									<td>URL of the publication.</td>
-									<td>A valid URL string&#160;[<cite><a class="bibref" href="#bib-url"
-												title="URL Standard" data-link-type="biblio">url</a></cite>].</td>
+									<td>A valid URL string&#160;[<cite><a class="bibref" data-link-type="biblio"
+												href="#bib-url" title="URL Standard">url</a></cite>].</td>
 									<td><a href="#value-array">Array</a> of <a href="#value-url"><abbr
 												title="Uniform Resource Locators">URLs</abbr></a></td>
 									<td>
@@ -2949,9 +3021,10 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 								<span>Note</span>
 							</div>
 							<div class="">The publication's address can also be used as value for an identifier link
-										relation&#160;[<cite><a class="bibref" href="#bib-link-relation"
+										relation&#160;[<cite><a class="bibref" data-link-type="biblio"
+										href="#bib-link-relation"
 										title="Identifier: A Link Relation to Convey a Preferred URI for Referencing"
-										data-link-type="biblio">link-relation</a></cite>].</div>
+										>link-relation</a></cite>].</div>
 						</div>
 
 						<div class="example" id="example-20-setting-the-address-of-the-publication">
@@ -2986,8 +3059,8 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 									<th>Description</th>
 									<th>Required Value</th>
 									<th>Value Category</th>
-									<th>[<cite><a class="bibref" href="#bib-schema.org" title="Schema.org"
-												data-link-type="biblio">schema.org</a></cite>] Mapping</th>
+									<th>[<cite><a class="bibref" data-link-type="biblio" href="#bib-schema.org"
+												title="Schema.org">schema.org</a></cite>] Mapping</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -2996,8 +3069,8 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 										<code>id</code>
 									</td>
 									<td>Preferred version of the publication.</td>
-									<td>A URL record&#160;[<cite><a class="bibref" href="#bib-url" title="URL Standard"
-												data-link-type="biblio">url</a></cite>].</td>
+									<td>A URL record&#160;[<cite><a class="bibref" data-link-type="biblio"
+												href="#bib-url" title="URL Standard">url</a></cite>].</td>
 									<td><a href="#value-id">Identifier</a></td>
 									<td>(None)</td>
 								</tr>
@@ -3022,7 +3095,7 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 						<p>The specification of the canonical identifier <em class="rfc2119" title="MAY">MAY</em> be
 							complemented by the inclusion of additional types of identifiers using the <a
 								href="https://schema.org/identifier"><code>identifier</code> property</a>&#160;[<cite><a
-									class="bibref" href="#bib-schema.org" title="Schema.org" data-link-type="biblio"
+									class="bibref" data-link-type="biblio" href="#bib-schema.org" title="Schema.org"
 									>schema.org</a></cite>] and/or its subtypes.</p>
 
 						<div class="example" id="example-21-setting-the-canonical-identifier-and-the-address-as-urls">
@@ -3073,8 +3146,8 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 									<th>Description</th>
 									<th>Required Value</th>
 									<th>Value Category</th>
-									<th>[<cite><a class="bibref" href="#bib-schema.org" title="Schema.org"
-												data-link-type="biblio">schema.org</a></cite>] Mapping</th>
+									<th>[<cite><a class="bibref" data-link-type="biblio" href="#bib-schema.org"
+												title="Schema.org">schema.org</a></cite>] Mapping</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -3089,7 +3162,7 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 										<a href="#value-array">Array</a> of <a href="#value-entity">Entities</a>
 									</td>
 									<td>
-										<a href="https://bib.schema.org/artist"><code>artist</code></a> (<a
+										<a href="https://schema.org/artist"><code>artist</code></a> (<a
 											href="https://schema.org/VisualArtwork">VisualArtwork</a>) </td>
 								</tr>
 								<tr>
@@ -3117,7 +3190,7 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 										<a href="#value-array">Array</a> of <a href="#value-entity">Entities</a>
 									</td>
 									<td>
-										<a href="https://bib.schema.org/colorist"><code>colorist</code></a> (<a
+										<a href="https://schema.org/colorist"><code>colorist</code></a> (<a
 											href="https://schema.org/VisualArtwork">VisualArtwork</a>) </td>
 								</tr>
 								<tr>
@@ -3187,7 +3260,7 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 										<a href="#value-array">Array</a> of <a href="#value-entity">Entities</a>
 									</td>
 									<td>
-										<a href="https://bib.schema.org/inker"><code>inker</code></a> (<a
+										<a href="https://schema.org/inker"><code>inker</code></a> (<a
 											href="https://schema.org/VisualArtwork">VisualArtwork</a>) </td>
 								</tr>
 								<tr>
@@ -3201,7 +3274,7 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 										<a href="#value-array">Array</a> of <a href="#value-entity">Entities</a>
 									</td>
 									<td>
-										<a href="https://bib.schema.org/letterer"><code>letterer</code></a> (<a
+										<a href="https://schema.org/letterer"><code>letterer</code></a> (<a
 											href="https://schema.org/VisualArtwork">VisualArtwork</a>) </td>
 								</tr>
 								<tr>
@@ -3214,7 +3287,7 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 										<a href="#value-array">Array</a> of <a href="#value-entity">Entities</a>
 									</td>
 									<td>
-										<a href="https://bib.schema.org/penciler"><code>penciler</code></a> (<a
+										<a href="https://schema.org/penciler"><code>penciler</code></a> (<a
 											href="https://schema.org/VisualArtwork">VisualArtwork</a>) </td>
 								</tr>
 								<tr>
@@ -3242,8 +3315,8 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 										<a href="#value-array">Array</a> of <a href="#value-entity">Entities</a>
 									</td>
 									<td>
-										<a href="https://bib.schema.org/readBy"><code>readBy</code></a> (<a
-											href="https://bib.schema.org/Audiobook">Audiobook</a>) </td>
+										<a href="https://schema.org/readBy"><code>readBy</code></a> (<a
+											href="https://schema.org/Audiobook">Audiobook</a>) </td>
 								</tr>
 								<tr>
 									<td id="translator">
@@ -3265,23 +3338,22 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 						<p>Creators <em class="rfc2119" title="MUST">MUST</em> be represented either as:</p>
 
 						<ol>
-							<li>a [<cite><a class="bibref" href="#bib-json"
+							<li>a [<cite><a class="bibref" data-link-type="biblio" href="#bib-json"
 										title="The application/json Media Type for JavaScript Object Notation (JSON)"
-										data-link-type="biblio">json</a></cite>] <a
-									href="https://tools.ietf.org/html/rfc4627#section-2.5">string</a> encoding the name
-								of a <a href="https://schema.org/Person"><code>Person</code></a>&#160;[<cite><a
-										class="bibref" href="#bib-schema.org" title="Schema.org" data-link-type="biblio"
-										>schema.org</a></cite>]; or</li>
+										>json</a></cite>] <a href="https://tools.ietf.org/html/rfc4627#section-2.5"
+									>string</a> encoding the name of a <a href="https://schema.org/Person"
+										><code>Person</code></a>&#160;[<cite><a class="bibref" data-link-type="biblio"
+										href="#bib-schema.org" title="Schema.org">schema.org</a></cite>]; or</li>
 							<li>an instance of a <a href="https://schema.org/Person"><code>Person</code></a> or <a
 									href="https://schema.org/Organization"><code>Organization</code></a>&#160;[<cite><a
-										class="bibref" href="#bib-schema.org" title="Schema.org" data-link-type="biblio"
+										class="bibref" data-link-type="biblio" href="#bib-schema.org" title="Schema.org"
 										>schema.org</a></cite>].</li>
 						</ol>
 
-						<p>A single string value is a shorthand for a [<cite><a class="bibref" href="#bib-schema.org"
-									title="Schema.org" data-link-type="biblio">schema.org</a></cite>]
-								<code>Person</code> whose <code>name</code> property is set to that string value. (See
-							also <a href="#value-entity" class="sec-ref">§&#160;<bdi class="secno">4.2.4.2
+						<p>A single string value is a shorthand for a [<cite><a class="bibref" data-link-type="biblio"
+									href="#bib-schema.org" title="Schema.org">schema.org</a></cite>] <code>Person</code>
+							whose <code>name</code> property is set to that string value. (See also <a
+								href="#value-entity" class="sec-ref">§&#160;<bdi class="secno">4.2.4.2
 								</bdi>Entities</a>.)</p>
 
 						<p>The manifest <em class="rfc2119" title="MAY">MAY</em> include more than one of each type of
@@ -3360,8 +3432,8 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 									<th>Description</th>
 									<th>Required Value</th>
 									<th>Value Category</th>
-									<th>[<cite><a class="bibref" href="#bib-schema.org" title="Schema.org"
-												data-link-type="biblio">schema.org</a></cite>] Mapping</th>
+									<th>[<cite><a class="bibref" data-link-type="biblio" href="#bib-schema.org"
+												title="Schema.org">schema.org</a></cite>] Mapping</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -3370,9 +3442,10 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 										<code>duration</code>
 									</td>
 									<td>Overall duration of a time-based publication.</td>
-									<td>Duration value as defined by&#160;[<cite><a class="bibref" href="#bib-iso8601"
+									<td>Duration value as defined by&#160;[<cite><a class="bibref"
+												data-link-type="biblio" href="#bib-iso8601"
 												title="Representation of dates and times. ISO 8601:2004."
-												data-link-type="biblio">iso8601</a></cite>].</td>
+											>iso8601</a></cite>].</td>
 									<td>
 										<a href="#value-literal">Literal</a>
 									</td>
@@ -3427,8 +3500,8 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 									<th>Description</th>
 									<th>Required Value</th>
 									<th>Value Category</th>
-									<th>[<cite><a class="bibref" href="#bib-schema.org" title="Schema.org"
-												data-link-type="biblio">schema.org</a></cite>] Mapping</th>
+									<th>[<cite><a class="bibref" data-link-type="biblio" href="#bib-schema.org"
+												title="Schema.org">schema.org</a></cite>] Mapping</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -3439,12 +3512,12 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 									<td>Last modification date of the publication.</td>
 									<td>A <a href="https://schema.org/Date"><code>Date</code></a> or <a
 											href="https://schema.org/DateTime"><code>DateTime</code></a>
-												value&#160;[<cite><a class="bibref" href="#bib-schema.org"
-												title="Schema.org" data-link-type="biblio">schema.org</a></cite>], both
+												value&#160;[<cite><a class="bibref" data-link-type="biblio"
+												href="#bib-schema.org" title="Schema.org">schema.org</a></cite>], both
 										expressed in ISO 8601 Date, or Date Time formats, respectively&#160;[<cite><a
-												class="bibref" href="#bib-iso8601"
+												class="bibref" data-link-type="biblio" href="#bib-iso8601"
 												title="Representation of dates and times. ISO 8601:2004."
-												data-link-type="biblio">iso8601</a></cite>].</td>
+											>iso8601</a></cite>].</td>
 									<td>
 										<a href="#value-literal">Literal</a>
 									</td>
@@ -3492,8 +3565,8 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 									<th>Description</th>
 									<th>Required Value</th>
 									<th>Value Category</th>
-									<th>[<cite><a class="bibref" href="#bib-schema.org" title="Schema.org"
-												data-link-type="biblio">schema.org</a></cite>] Mapping</th>
+									<th>[<cite><a class="bibref" data-link-type="biblio" href="#bib-schema.org"
+												title="Schema.org">schema.org</a></cite>] Mapping</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -3505,9 +3578,9 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 									<td>A <a href="https://schema.org/Date"><code>Date</code></a> or <a
 											href="https://schema.org/DateTime"><code>DateTime</code></a>, both expressed
 										in ISO 8601 Date, or Date Time formats, respectively&#160;[<cite><a
-												class="bibref" href="#bib-iso8601"
+												class="bibref" data-link-type="biblio" href="#bib-iso8601"
 												title="Representation of dates and times. ISO 8601:2004."
-												data-link-type="biblio">iso8601</a></cite>].</td>
+											>iso8601</a></cite>].</td>
 									<td>
 										<a href="#value-literal">Literal</a>
 									</td>
@@ -3557,8 +3630,8 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 									<th>Description</th>
 									<th>Required Value</th>
 									<th>Value Category</th>
-									<th>[<cite><a class="bibref" href="#bib-schema.org" title="Schema.org"
-												data-link-type="biblio">schema.org</a></cite>] Mapping</th>
+									<th>[<cite><a class="bibref" data-link-type="biblio" href="#bib-schema.org"
+												title="Schema.org">schema.org</a></cite>] Mapping</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -3570,8 +3643,8 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 											>language</a> for the publication.</td>
 									<td>One or more <a href="https://tools.ietf.org/html/bcp47#section-2.2.9"
 											>well-formed language tags</a>&#160;[<cite><a class="bibref"
-												href="#bib-bcp47" title="Tags for Identifying Languages"
-												data-link-type="biblio">bcp47</a></cite>].</td>
+												data-link-type="biblio" href="#bib-bcp47"
+												title="Tags for Identifying Languages">bcp47</a></cite>].</td>
 									<td>
 										<a href="#value-array">Array</a> of <a href="#value-literal">Literals</a>
 									</td>
@@ -3584,18 +3657,16 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 
 						<p>The natural language <em class="rfc2119" title="MUST">MUST</em> be a <a
 								href="https://tools.ietf.org/html/bcp47#section-2.2.9">well-formed language tag</a>
-									&#160;[<cite><a class="bibref" href="#bib-bcp47"
-									title="Tags for Identifying Languages" data-link-type="biblio"
-							>bcp47</a></cite>].</p>
+									&#160;[<cite><a class="bibref" data-link-type="biblio" href="#bib-bcp47"
+									title="Tags for Identifying Languages">bcp47</a></cite>].</p>
 
 						<p>If a user agent requires the publication language and it is not available in the manifest, or
 							the obtained value is not <a href="https://tools.ietf.org/html/bcp47#section-2.2.9"
-								>well-formed</a>&#160;[<cite><a class="bibref" href="#bib-bcp47"
-									title="Tags for Identifying Languages" data-link-type="biblio">bcp47</a></cite>],
-							the user agent <em class="rfc2119" title="MAY">MAY</em> attempt to determine the publication
-							language when <a href="#manifest-processing">generating its internal representation</a>.
-							This specification does not mandate how such a language tag is created. The user agent
-							might:</p>
+								>well-formed</a>&#160;[<cite><a class="bibref" data-link-type="biblio" href="#bib-bcp47"
+									title="Tags for Identifying Languages">bcp47</a></cite>], the user agent <em
+								class="rfc2119" title="MAY">MAY</em> attempt to determine the publication language when
+								<a href="#manifest-processing">generating its internal representation</a>. This
+							specification does not mandate how such a language tag is created. The user agent might:</p>
 
 						<ul>
 							<li>use the <a href="#manifest-lang-dir">language declaration of the manifest</a>;</li>
@@ -3640,8 +3711,8 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 									<th>Description</th>
 									<th>Required Value</th>
 									<th>Value Category</th>
-									<th>[<cite><a class="bibref" href="#bib-schema.org" title="Schema.org"
-												data-link-type="biblio">schema.org</a></cite>] Mapping</th>
+									<th>[<cite><a class="bibref" data-link-type="biblio" href="#bib-schema.org"
+												title="Schema.org">schema.org</a></cite>] Mapping</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -3706,8 +3777,8 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 									<th>Description</th>
 									<th>Required Value</th>
 									<th>Value Category</th>
-									<th>[<cite><a class="bibref" href="#bib-schema.org" title="Schema.org"
-												data-link-type="biblio">schema.org</a></cite>] Mapping</th>
+									<th>[<cite><a class="bibref" data-link-type="biblio" href="#bib-schema.org"
+												title="Schema.org">schema.org</a></cite>] Mapping</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -3739,9 +3810,9 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 							</div>
 							<p class="">A user agent is not expected to produce a <a
 									href="https://www.w3.org/TR/WCAG21/#page-titled">meaningful title</a>&#160;[<cite><a
-										class="bibref" href="#bib-wcag21"
-										title="Web Content Accessibility Guidelines (WCAG) 2.1" data-link-type="biblio"
-										>wcag21</a></cite>] for a publication when one is not specified. </p>
+										class="bibref" data-link-type="biblio" href="#bib-wcag21"
+										title="Web Content Accessibility Guidelines (WCAG) 2.1">wcag21</a></cite>] for a
+								publication when one is not specified. </p>
 						</div>
 
 						<div class="example" id="example-29-setting-the-title-of-a-book-explicitly">
@@ -3799,8 +3870,8 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 									<th>Description</th>
 									<th>Required Value</th>
 									<th>Value Category</th>
-									<th>[<cite><a class="bibref" href="#bib-schema.org" title="Schema.org"
-												data-link-type="biblio">schema.org</a></cite>] Mapping</th>
+									<th>[<cite><a class="bibref" data-link-type="biblio" href="#bib-schema.org"
+												title="Schema.org">schema.org</a></cite>] Mapping</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -3826,12 +3897,11 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 								>MUST</em> be expressed either as:</p>
 
 						<ul>
-							<li>a [<cite><a class="bibref" href="#bib-json"
+							<li>a [<cite><a class="bibref" data-link-type="biblio" href="#bib-json"
 										title="The application/json Media Type for JavaScript Object Notation (JSON)"
-										data-link-type="biblio">json</a></cite>] <a
-									href="https://tools.ietf.org/html/rfc4627#section-2.5">string</a> representing the
-									<a href="#dfn-url" class="internalDFN" data-link-type="dfn">URL</a> of the resource;
-								or</li>
+										>json</a></cite>] <a href="https://tools.ietf.org/html/rfc4627#section-2.5"
+									>string</a> representing the <a href="#dfn-url" class="internalDFN"
+									data-link-type="dfn">URL</a> of the resource; or</li>
 							<li>an instance of a <a href="#dfn-linkedresources" class="internalDFN" data-link-type="dfn"
 											><code><code>LinkedResource</code></code></a> object.</li>
 						</ul>
@@ -3931,8 +4001,8 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 									<th>Description</th>
 									<th>Required Value</th>
 									<th>Value Category</th>
-									<th>[<cite><a class="bibref" href="#bib-schema.org" title="Schema.org"
-												data-link-type="biblio">schema.org</a></cite>] Mapping</th>
+									<th>[<cite><a class="bibref" data-link-type="biblio" href="#bib-schema.org"
+												title="Schema.org">schema.org</a></cite>] Mapping</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -3959,12 +4029,11 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 								>MUST</em> be expressed either as:</p>
 
 						<ul>
-							<li>a [<cite><a class="bibref" href="#bib-json"
+							<li>a [<cite><a class="bibref" data-link-type="biblio" href="#bib-json"
 										title="The application/json Media Type for JavaScript Object Notation (JSON)"
-										data-link-type="biblio">json</a></cite>] <a
-									href="https://tools.ietf.org/html/rfc4627#section-2.5">string</a> representing the
-									<a href="#dfn-url" class="internalDFN" data-link-type="dfn">URL</a> of the resource;
-								or</li>
+										>json</a></cite>] <a href="https://tools.ietf.org/html/rfc4627#section-2.5"
+									>string</a> representing the <a href="#dfn-url" class="internalDFN"
+									data-link-type="dfn">URL</a> of the resource; or</li>
 							<li>an instance of a <a href="#dfn-linkedresources" class="internalDFN" data-link-type="dfn"
 											><code><code>LinkedResource</code></code></a> object.</li>
 						</ul>
@@ -4045,8 +4114,8 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 									<th>Description</th>
 									<th>Required Value</th>
 									<th>Value Category</th>
-									<th>[<cite><a class="bibref" href="#bib-schema.org" title="Schema.org"
-												data-link-type="biblio">schema.org</a></cite>] Mapping</th>
+									<th>[<cite><a class="bibref" data-link-type="biblio" href="#bib-schema.org"
+												title="Schema.org">schema.org</a></cite>] Mapping</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -4073,12 +4142,11 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 							expressed either as:</p>
 
 						<ul>
-							<li>a [<cite><a class="bibref" href="#bib-json"
+							<li>a [<cite><a class="bibref" data-link-type="biblio" href="#bib-json"
 										title="The application/json Media Type for JavaScript Object Notation (JSON)"
-										data-link-type="biblio">json</a></cite>] <a
-									href="https://tools.ietf.org/html/rfc4627#section-2.5">string</a> representing the
-									<a href="#dfn-url" class="internalDFN" data-link-type="dfn">URL</a> of the resource;
-								or</li>
+										>json</a></cite>] <a href="https://tools.ietf.org/html/rfc4627#section-2.5"
+									>string</a> representing the <a href="#dfn-url" class="internalDFN"
+									data-link-type="dfn">URL</a> of the resource; or</li>
 							<li>an instance of a <a href="#dfn-linkedresources" class="internalDFN" data-link-type="dfn"
 											><code><code>LinkedResource</code></code></a> object.</li>
 						</ul>
@@ -4152,23 +4220,23 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 								class="self-link" aria-label="§" href="#extensibility-linked-records"></a></h5>
 
 						<p>The manifest <em class="rfc2119" title="MAY">MAY</em> be extended through links to metadata
-							records, such as an ONIX&#160;[<cite><a class="bibref" href="#bib-onix"
-									title="ONIX for Books" data-link-type="biblio">onix</a></cite>] or
-									BibTeX&#160;[<cite><a class="bibref" href="#bib-bibtex"
-									title="BibTeX Format Description" data-link-type="biblio">bibtex</a></cite>], using
-							a <a href="#dfn-linkedresources" class="internalDFN" data-link-type="dfn"
+							records, such as an ONIX&#160;[<cite><a class="bibref" data-link-type="biblio"
+									href="#bib-onix" title="ONIX for Books">onix</a></cite>] or BibTeX&#160;[<cite><a
+									class="bibref" data-link-type="biblio" href="#bib-bibtex"
+									title="BibTeX Format Description">bibtex</a></cite>], using a <a
+								href="#dfn-linkedresources" class="internalDFN" data-link-type="dfn"
 										><code><code>LinkedResource</code></code></a> object, where:</p>
 						<ul>
 							<li>the <a href="#linkedresource-rel"><code>rel</code> property</a> of the
 									<code>LinkedResource</code> includes a relevant identifier (e.g., if the linked
 								record contains descriptive metadata, the <code>describedby</code> identifier [<cite><a
-										class="bibref" href="#bib-iana-link-relations" title="Link Relations"
-										data-link-type="biblio">iana-link-relations</a></cite>] can be used); </li>
+										class="bibref" data-link-type="biblio" href="#bib-iana-link-relations"
+										title="Link Relations">iana-link-relations</a></cite>] can be used); </li>
 							<li>the value of the <code>encodingFormat</code> identifies the MIME media
-										type&#160;[<cite><a class="bibref" href="#bib-rfc2046"
+										type&#160;[<cite><a class="bibref" data-link-type="biblio" href="#bib-rfc2046"
 										title="Multipurpose Internet Mail Extensions (MIME) Part Two: Media Types"
-										data-link-type="biblio">rfc2046</a></cite>] defined for that particular type of
-								record, if applicable.</li>
+										>rfc2046</a></cite>] defined for that particular type of record, if
+								applicable.</li>
 						</ul>
 
 						<p>Linked records are included in the <a href="#resource-list">resource list</a> when they are
@@ -4213,14 +4281,14 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 								href="#extensibility-manifest-properties"></a></h5>
 
 						<p>Additional properties <em class="rfc2119" title="MAY">MAY</em> be included directly in the
-							manifest using public schemes like [<cite><a class="bibref" href="#bib-schema.org"
-									title="Schema.org" data-link-type="biblio">schema.org</a></cite>] or [<cite><a
-									class="bibref" href="#bib-dcterms" title="DCMI Metadata Terms"
-									data-link-type="biblio">dcterms</a></cite>]. Proprietary terms <em class="rfc2119"
-								title="MAY">MAY</em> be used, but it is <em class="rfc2119" title="RECOMMENDED"
-								>RECOMMENDED</em> that such terms be included using <a
+							manifest using public schemes like [<cite><a class="bibref" data-link-type="biblio"
+									href="#bib-schema.org" title="Schema.org">schema.org</a></cite>] or [<cite><a
+									class="bibref" data-link-type="biblio" href="#bib-dcterms"
+									title="DCMI Metadata Terms">dcterms</a></cite>]. Proprietary terms <em
+								class="rfc2119" title="MAY">MAY</em> be used, but it is <em class="rfc2119"
+								title="RECOMMENDED">RECOMMENDED</em> that such terms be included using <a
 								href="https://www.w3.org/TR/json-ld/#compact-iris">Compact IRIs</a>&#160;[<cite><a
-									class="bibref" href="#bib-json-ld11" title="JSON-LD 1.1" data-link-type="biblio"
+									class="bibref" data-link-type="biblio" href="#bib-json-ld11" title="JSON-LD 1.1"
 									>json-ld11</a></cite>], with prefixes defined as part of the context.</p>
 
 						<div class="note" role="note" id="issue-container-generatedID-19">
@@ -4258,20 +4326,19 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 						</div>
 
 						<p>The <a href="https://schema.org/docs/jsonldcontext.json">Schema.org context file</a>
-									[<cite><a class="bibref" href="#bib-schema.org" title="Schema.org"
-									data-link-type="biblio">schema.org</a></cite>] defines a number of prefixes for
-							commonly used vocabularies, such as the Dublin Core Terms (<code>dcterms</code>) [<cite><a
-									class="bibref" href="#bib-dcterms" title="DCMI Metadata Terms"
-									data-link-type="biblio">dcterms</a></cite>] and Element Set (<code>dc</code>)
-									[<cite><a class="bibref" href="#bib-dc11"
-									title="Dublin Core Metadata Element Set, Version 1.1" data-link-type="biblio"
-									>dc11</a></cite>], the FOAF vocabulary (<code>foaf</code>) [<cite><a class="bibref"
+									[<cite><a class="bibref" data-link-type="biblio" href="#bib-schema.org"
+									title="Schema.org">schema.org</a></cite>] defines a number of prefixes for commonly
+							used vocabularies, such as the Dublin Core Terms (<code>dcterms</code>) [<cite><a
+									class="bibref" data-link-type="biblio" href="#bib-dcterms"
+									title="DCMI Metadata Terms">dcterms</a></cite>] and Element Set (<code>dc</code>)
+									[<cite><a class="bibref" data-link-type="biblio" href="#bib-dc11"
+									title="Dublin Core Metadata Element Set, Version 1.1">dc11</a></cite>], the FOAF
+							vocabulary (<code>foaf</code>) [<cite><a class="bibref" data-link-type="biblio"
 									href="#bib-foaf" title="FOAF Vocabulary Specification 0.99 (Paddington Edition)"
-									data-link-type="biblio">foaf</a></cite>], and the Bibliographic Ontology
-								(<code>bibo</code>) [<cite><a class="bibref" href="#bib-bibo"
-									title="Bibliographic Ontology Specification" data-link-type="biblio"
-							>bibo</a></cite>]. Properties from these vocabularies can be used without their prefixes
-							having to be declared.</p>
+									>foaf</a></cite>], and the Bibliographic Ontology (<code>bibo</code>) [<cite><a
+									class="bibref" data-link-type="biblio" href="#bib-bibo"
+									title="Bibliographic Ontology Specification">bibo</a></cite>]. Properties from these
+							vocabularies can be used without their prefixes having to be declared.</p>
 
 						<div class="example"
 							id="example-35-extending-the-basic-data-using-the-schema-org-copyrightyear-and-copyrightholder-terms">
@@ -4362,17 +4429,16 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 
 						<p>If the cover is an image (whether embedded in an HTML resource or not), it is strongly
 							advised to follow <a href="https://www.w3.org/TR/WCAG/#non-text-content">Success Criterion
-								1.1.1</a>&#160;[<cite><a class="bibref" href="#bib-wcag"
-									title="Web Content Accessibility Guidelines 1.0" data-link-type="biblio"
-								>WCAG</a></cite>] for the provision of alternative text and extended descriptions. For
-							image formats that do not provide the ability to embed this information, the <a
-								href="#linkedresource-name"><code>name</code></a> and <a
-								href="#linkedresource-description"><code>description</code></a> properties of <a
-								href="#dfn-linkedresources" class="internalDFN" data-link-type="dfn"
-										><code><code>LinkedResource</code></code></a> can be used to provide alternative
-							text and extended descriptions, respectively. In these cases, the <code>name</code> property
-								<em class="rfc2119" title="SHOULD">SHOULD</em> always be set — the property can be left
-							empty for decorative images.</p>
+								1.1.1</a>&#160;[<cite><a class="bibref" data-link-type="biblio" href="#bib-wcag21"
+									title="Web Content Accessibility Guidelines (WCAG) 2.1">wcag21</a></cite>] for the
+							provision of alternative text and extended descriptions. For image formats that do not
+							provide the ability to embed this information, the <a href="#linkedresource-name"
+									><code>name</code></a> and <a href="#linkedresource-description"
+									><code>description</code></a> properties of <a href="#dfn-linkedresources"
+								class="internalDFN" data-link-type="dfn"><code><code>LinkedResource</code></code></a>
+							can be used to provide alternative text and extended descriptions, respectively. In these
+							cases, the <code>name</code> property <em class="rfc2119" title="SHOULD">SHOULD</em> always
+							be set — the property can be left empty for decorative images.</p>
 
 						<div class="example"
 							id="example-38-identifying-a-cover-image-alternative-text-and-a-description-are-provided-in-the-name-and-description-properties-respectively">
@@ -4516,23 +4582,32 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 						</div>
 					</section>
 
-					<section id="pub-table-of-contents">
+					<section id="contents">
 						<h5 id="x4-8-1-3-table-of-contents"><bdi class="secno">4.8.1.3 </bdi>Table of Contents<a
-								class="self-link" aria-label="§" href="#pub-table-of-contents"></a></h5>
+								class="self-link" aria-label="§" href="#contents"></a></h5>
 
 						<p>The table of contents is a navigational aid that provides links to the major structural
 							sections of a <a href="#dfn-digital-publications" class="internalDFN" data-link-type="dfn"
 								>digital publication</a>.</p>
 
-						<p>The <dfn data-lt="toc|table of contents" data-dfn-type="dfn" id="dfn-toc">table of
-								contents</dfn> is identified by the <code>contents</code> link relation&#160;[<cite><a
-									class="bibref" href="#bib-iana-link-relations" title="Link Relations"
-									data-link-type="biblio">iana-link-relations</a></cite>].</p>
+						<p>The resource that contains the <dfn data-lt="toc|table of contents" data-dfn-type="dfn"
+								id="dfn-toc">table of contents</dfn> is identified by the <code>contents</code> link
+									relation&#160;[<cite><a class="bibref" data-link-type="biblio"
+									href="#bib-iana-link-relations" title="Link Relations"
+								>iana-link-relations</a></cite>]. The table of contents proper is the first element
+							inside that resource with the <code>role</code> value <code>doc-toc</code>, as defined in <a
+								href="#app-toc-html" class="sec-ref">§&#160;<bdi class="secno">C.2 </bdi>HTML
+								Structure</a>.</p>
 
 						<p>Only one resource <em class="rfc2119" title="MAY">MAY</em> be identified as containing the
 							table of contents. If multiple instances are specified, user agents <em class="rfc2119"
-								title="MUST">MUST</em> use the first instance encountered, with precedence given to the
-								<a href="#default-reading-order">reading order</a>.</p>
+								title="MUST">MUST</em> use the first instance encountered, with precedence given to
+							resources in the <a href="#default-reading-order">reading order</a>.</p>
+
+						<p><a href="#dfn-profiles" class="internalDFN" data-link-type="dfn">Profiles</a> of this
+							specification <em class="rfc2119" title="MAY">MAY</em> define how to locate a resource
+							containing the table of contents when no resource is identified by the <code>contents</code>
+							relation.</p>
 
 						<p>The link to the table of contents <em class="rfc2119" title="MUST NOT">MUST NOT</em> be
 							specified in the <a href="#links">links list</a>.</p>
@@ -4579,9 +4654,9 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 								publication</a> for consumption by users with varying preferred reading modalities.
 							These reports typically identify the result of an evaluation against established
 							accessibility criteria, such as those provided in [<cite><a class="bibref"
-									href="#bib-wcag21" title="Web Content Accessibility Guidelines (WCAG) 2.1"
-									data-link-type="biblio">wcag21</a></cite>], and are an important source of
-							information in determining the usability of a publication.</p>
+									data-link-type="biblio" href="#bib-wcag21"
+									title="Web Content Accessibility Guidelines (WCAG) 2.1">wcag21</a></cite>], and are
+							an important source of information in determining the usability of a publication.</p>
 
 						<p>An accessibility report is identified using the <code>accessibility-report</code> link
 							relation.</p>
@@ -4603,11 +4678,11 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 								<span>Note</span>
 							</div>
 							<p class="">Providing the accessibility report in a human-readable format, such as HTML
-										[<cite><a class="bibref" href="#bib-html" title="HTML Standard"
-										data-link-type="biblio">html</a></cite>], helps ensure that it can be accessed
-								and understood by users. Augmenting the report with machine-processable metadata, such
-								as provided in Schema.org&#160;[<cite><a class="bibref" href="#bib-schema.org"
-										title="Schema.org" data-link-type="biblio">schema.org</a></cite>], will
+										[<cite><a class="bibref" data-link-type="biblio" href="#bib-html"
+										title="HTML Standard">html</a></cite>], helps ensure that it can be accessed and
+								understood by users. Augmenting the report with machine-processable metadata, such as
+								provided in Schema.org&#160;[<cite><a class="bibref" data-link-type="biblio"
+										href="#bib-schema.org" title="Schema.org">schema.org</a></cite>], will
 								additionally aid in machine processing.</p>
 						</div>
 
@@ -4643,7 +4718,7 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 
 						<p>A <dfn data-lt="preview" data-dfn-type="dfn" id="dfn-preview">preview</dfn> is identified
 							using the <code>preview</code> link relation&#160;[<cite><a class="bibref"
-									href="#bib-iana-link-relations" title="Link Relations" data-link-type="biblio"
+									data-link-type="biblio" href="#bib-iana-link-relations" title="Link Relations"
 									>iana-link-relations</a></cite>].</p>
 
 						<p>Previews <em class="rfc2119" title="MAY">MAY</em> be located externally or included as
@@ -4714,8 +4789,9 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 
 						<p>A <dfn data-lt="privacyPolicy|privacy policy" data-dfn-type="dfn" id="dfn-privacypolicy"
 								>privacy policy</dfn> is identified using the <code>privacy-policy</code> link
-									relation&#160;[<cite><a class="bibref" href="#bib-iana-link-relations"
-									title="Link Relations" data-link-type="biblio">iana-link-relations</a></cite>].</p>
+									relation&#160;[<cite><a class="bibref" data-link-type="biblio"
+									href="#bib-iana-link-relations" title="Link Relations"
+								>iana-link-relations</a></cite>].</p>
 
 						<div class="example" id="example-46-identifying-a-privacy-policy-via-an-external-link">
 							<div class="marker">
@@ -4752,15 +4828,16 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 					<ul>
 						<li>through the use of relations defined in a relation vocabulary (e.g., the <a
 								href="https://www.iana.org/assignments/link-relations/link-relations.xhtml">IANA link
-								registry</a>&#160;[<cite><a class="bibref" href="#bib-iana-link-relations"
-									title="Link Relations" data-link-type="biblio">iana-link-relations</a></cite>] and
-								<a href="http://microformats.org/wiki/existing-rel-values">microformats existing rel
-								values</a> [<cite><a class="bibref" href="#bib-mfrel"
-									title="Microformats Wiki: existing rel values. Microformats."
-									data-link-type="biblio">mfrel</a></cite>]); or</li>
+								registry</a>&#160;[<cite><a class="bibref" data-link-type="biblio"
+									href="#bib-iana-link-relations" title="Link Relations"
+								>iana-link-relations</a></cite>] and <a
+								href="http://microformats.org/wiki/existing-rel-values">microformats existing rel
+								values</a> [<cite><a class="bibref" data-link-type="biblio" href="#bib-mfrel"
+									title="Microformats Wiki: existing rel values. Microformats.">mfrel</a></cite>]);
+							or</li>
 						<li>through the use of <a href="https://tools.ietf.org/html/rfc8288#section-2.1.2">extension
-								relation types</a>&#160;[<cite><a class="bibref" href="#bib-rfc8288" title="Web Linking"
-									data-link-type="biblio">rfc8288</a></cite>].</li>
+								relation types</a>&#160;[<cite><a class="bibref" data-link-type="biblio"
+									href="#bib-rfc8288" title="Web Linking">rfc8288</a></cite>].</li>
 					</ul>
 				</section>
 			</section>
@@ -4803,8 +4880,8 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 
 				<ul>
 					<li>
-						<p>An HTTP <code>Link</code> header field&#160;[<cite><a class="bibref" href="#bib-rfc5988"
-									title="Web Linking" data-link-type="biblio">rfc5988</a></cite>] with its
+						<p>An HTTP <code>Link</code> header field&#160;[<cite><a class="bibref" data-link-type="biblio"
+									href="#bib-rfc5988" title="Web Linking">rfc5988</a></cite>] with its
 								<code>rel</code> parameter set to the value "<code>publication</code>".</p>
 						<div class="example" id="example-47">
 							<div class="marker">
@@ -4814,9 +4891,9 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 						</div>
 					</li>
 					<li>
-						<p>A <code>link</code> element&#160;[<cite><a class="bibref" href="#bib-html"
-									title="HTML Standard" data-link-type="biblio">html</a></cite>] with its
-								<code>rel</code> attribute set to the value "<code>publication</code>".</p>
+						<p>A <code>link</code> element&#160;[<cite><a class="bibref" data-link-type="biblio"
+									href="#bib-html" title="HTML Standard">html</a></cite>] with its <code>rel</code>
+							attribute set to the value "<code>publication</code>".</p>
 						<div class="example" id="example-48">
 							<div class="marker">
 								<a class="self-link" href="#example-48">Example<bdi> 48</bdi></a>
@@ -4856,12 +4933,12 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 				<p>When a <a href="#dfn-digital-publications" class="internalDFN" data-link-type="dfn">digital
 						publication</a> format allows manifests to be embedded within an HTML document, the manifest <em
 						class="rfc2119" title="MUST">MUST</em> be included in a <a
-						href="https://www.w3.org/TR/html5/semantics-scripting.html#the-script-element"
-							><code>script</code> element</a>&#160;[<cite><a class="bibref" href="#bib-html"
-							title="HTML Standard" data-link-type="biblio">html</a></cite>] whose <a
+						href="https://html.spec.whatwg.org/multipage/scripting.html#the-script-element"
+							><code>script</code> element</a>&#160;[<cite><a class="bibref" data-link-type="biblio"
+							href="#bib-html" title="HTML Standard">html</a></cite>] whose <a
 						href="https://www.w3.org/TR/json-ld11/#embedding-json-ld-in-html-documents"><code>type</code>
 						attribute is set to <code>application/ld+json</code></a>&#160;[<cite><a class="bibref"
-							href="#bib-json-ld11" title="JSON-LD 1.1" data-link-type="biblio">json-ld11</a></cite>].</p>
+							data-link-type="biblio" href="#bib-json-ld11" title="JSON-LD 1.1">json-ld11</a></cite>].</p>
 
 				<div class="example" id="example-50-script-tag-for-a-publication-manifest-embedded-in-an-html-document">
 					<div class="marker">
@@ -4895,8 +4972,8 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 			<h2 id="x7-processing-a-manifest"><bdi class="secno">7. </bdi>Processing a Manifest<a class="self-link"
 					aria-label="§" href="#manifest-processing"></a></h2>
 
-			<p><em>This section depends on the Infra Standard [<cite><a class="bibref" href="#bib-infra"
-							title="Infra Standard" data-link-type="biblio">infra</a></cite>].</em></p>
+			<p><em>This section depends on the Infra Standard [<cite><a class="bibref" data-link-type="biblio"
+							href="#bib-infra" title="Infra Standard">infra</a></cite>].</em></p>
 
 			<section id="processing-intro" class="informative">
 				<h3 id="x7-1-introduction"><bdi class="secno">7.1 </bdi>Introduction<a class="self-link" aria-label="§"
@@ -4904,14 +4981,14 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 				<p><em>This section is non-normative.</em></p>
 
 				<p>Although a <a href="#dfn-digital-publications" class="internalDFN" data-link-type="dfn">digital
-						publication</a>'s manifest is authored as [<cite><a class="bibref" href="#bib-json-ld11"
-							title="JSON-LD 1.1" data-link-type="biblio">json-ld11</a></cite>], the steps for processing
-					a manifest decribed in this section detail how a user agent transforms the manifest into its <a
+						publication</a>'s manifest is authored as [<cite><a class="bibref" data-link-type="biblio"
+							href="#bib-json-ld11" title="JSON-LD 1.1">json-ld11</a></cite>], the steps for processing a
+					manifest decribed in this section detail how a user agent transforms the manifest into its <a
 						href="#dfn-internal-representation" class="internalDFN" data-link-type="dfn">internal
 						representation</a> of the data. The algorithm describes the process using the terminology and
-					data types defined in [<cite><a class="bibref" href="#bib-infra" title="Infra Standard"
-							data-link-type="biblio">infra</a></cite>], and, if successful results in an [<cite><a
-							class="bibref" href="#bib-infra" title="Infra Standard" data-link-type="biblio"
+					data types defined in [<cite><a class="bibref" data-link-type="biblio" href="#bib-infra"
+							title="Infra Standard">infra</a></cite>], and, if successful results in an [<cite><a
+							class="bibref" data-link-type="biblio" href="#bib-infra" title="Infra Standard"
 						>infra</a></cite>] <a href="https://infra.spec.whatwg.org/#ordered-map">map</a> of the data
 					being returned.</p>
 
@@ -4990,9 +5067,10 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 					<li><var>text</var>: a UTF-8 string representing the manifest.</li>
 					<li><var>base</var>: a URL string that represents the <a href="#dfn-base-url" class="internalDFN"
 							data-link-type="dfn">base URL</a> for the manifest.</li>
-					<li><var>document</var>: the <a href="https://html.spec.whatwg.org/multipage/#the-document-object"
-							>HTML Document (DOM) Node</a>&#160;[<cite><a class="bibref" href="#bib-html"
-								title="HTML Standard" data-link-type="biblio">html</a></cite>] of the document that <a
+					<li><var>document</var>: the <a
+							href="https://html.spec.whatwg.org/multipage/dom.html#the-document-object">HTML Document
+							(DOM) Node</a>&#160;[<cite><a class="bibref" data-link-type="biblio" href="#bib-html"
+								title="HTML Standard">html</a></cite>] of the document that <a
 							href="#manifest-discovery">references the manifest</a>, when available.</li>
 				</ul>
 
@@ -5026,9 +5104,9 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 						<details>
 							<summary>Explanation</summary>
 							<p>Publication manifests have to be expressed as JSON objects, not arrays. After converting
-								the manifest to [<cite><a class="bibref" href="#bib-infra" title="Infra Standard"
-										data-link-type="biblio">infra</a></cite>] types, an additional check is made
-								that the resulting structure is a <a href="https://infra.spec.whatwg.org/#ordered-map"
+								the manifest to [<cite><a class="bibref" data-link-type="biblio" href="#bib-infra"
+										title="Infra Standard">infra</a></cite>] types, an additional check is made that
+								the resulting structure is a <a href="https://infra.spec.whatwg.org/#ordered-map"
 									>map</a>.</p>
 						</details>
 					</li>
@@ -5115,10 +5193,10 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 						</ol>
 						<p>If <var>lang</var> is neither an empty <a href="https://infra.spec.whatwg.org/#string"
 								>string</a> nor a <a href="https://tools.ietf.org/html/bcp47#section-2.2.9"
-								>well-formed</a>&#160;[<cite><a class="bibref" href="#bib-bcp47"
-									title="Tags for Identifying Languages" data-link-type="biblio">bcp47</a></cite>]
-							language tag, <a href="#dfn-validation-errors" class="internalDFN" data-link-type="dfn"
-								>validation error</a>, set <var>lang</var> to an empty string.</p>
+								>well-formed</a>&#160;[<cite><a class="bibref" data-link-type="biblio" href="#bib-bcp47"
+									title="Tags for Identifying Languages">bcp47</a></cite>] language tag, <a
+								href="#dfn-validation-errors" class="internalDFN" data-link-type="dfn">validation
+								error</a>, set <var>lang</var> to an empty string.</p>
 						<p>If <var>dir</var> is neither an empty <a href="https://infra.spec.whatwg.org/#string"
 								>string</a> nor one of the values "<code>ltr</code>" or "<code>rtl</code>", <a
 								href="#dfn-validation-errors" class="internalDFN" data-link-type="dfn">validation
@@ -5129,6 +5207,23 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 								and base direction, respectively, for localizable strings without a declaration.</p>
 							<p>The iterator moves backwards through <var>@context</var> as the last language and
 								direction declarations override any earlier ones.</p>
+						</details>
+					</li>
+
+					<li id="processing-context-extension">
+						<p>(<a href="#manifest-context" class="sec-ref">§&#160;<bdi class="secno">4.3 </bdi>Manifest
+								Contexts</a>) If a <a href="#dfn-profiles" class="internalDFN" data-link-type="dfn"
+								>profile</a> requires additional validation of the manifest context, those steps are
+							performed here.</p>
+						<details>
+							<summary>Explanation</summary>
+							<p>This extension step allows verification of any information a profile requires be present
+								in the manifest context (e.g., additional context <abbr
+									title="Uniform Resource Locators">URLs</abbr> or parameters). These steps have to be
+								performed at this point, as <code>@context</code> terms are removed as part of the <a
+									href="#processing-normalize">data normalization</a> in the next step. A more general
+								step for processing profile data is provided at a <a href="#processing-extension">later
+									step</a>.</p>
 						</details>
 					</li>
 
@@ -5720,11 +5815,11 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 							<li id="abs-url-convert">
 								<p>Set <var>url</var> to the result of running the <a
 										href="https://url.spec.whatwg.org/#concept-url-parser">URL
-											parser</a>&#160;[<cite><a class="bibref" href="#bib-url"
-											title="URL Standard" data-link-type="biblio">url</a></cite>], when
-									successful, with <var>url</var> as input and <var>base</var> as the base URL. If
-									failure is returned, <a href="#dfn-validation-errors" class="internalDFN"
-										data-link-type="dfn">validation error</a>, return failure.</p>
+											parser</a>&#160;[<cite><a class="bibref" data-link-type="biblio"
+											href="#bib-url" title="URL Standard">url</a></cite>], when successful, with
+										<var>url</var> as input and <var>base</var> as the base URL. If failure is
+									returned, <a href="#dfn-validation-errors" class="internalDFN" data-link-type="dfn"
+										>validation error</a>, return failure.</p>
 								<details>
 									<summary>Explanation</summary>
 									<p>This step calls the URL parser function on the url to be processed. If the url is
@@ -5803,21 +5898,20 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 						<li id="validate-duration">
 							<p>(<a href="#duration" class="sec-ref">§&#160;<bdi class="secno">4.7.1.6
 								</bdi>Duration</a>) If <var>data["duration"]</var> is set and is not a valid duration
-								value, per&#160;[<cite><a class="bibref" href="#bib-iso8601"
-										title="Representation of dates and times. ISO 8601:2004."
-										data-link-type="biblio">iso8601</a></cite>], <a href="#dfn-validation-errors"
-									class="internalDFN" data-link-type="dfn">validation error</a>, <a
-									href="https://infra.spec.whatwg.org/#map-remove">remove</a>
+								value, per&#160;[<cite><a class="bibref" data-link-type="biblio" href="#bib-iso8601"
+										title="Representation of dates and times. ISO 8601:2004.">iso8601</a></cite>],
+									<a href="#dfn-validation-errors" class="internalDFN" data-link-type="dfn">validation
+									error</a>, <a href="https://infra.spec.whatwg.org/#map-remove">remove</a>
 								<var>data["duration"]</var>.</p>
 						</li>
 
 						<li id="validate-last-mod">
 							<p>(<a href="#last-modification-date" class="sec-ref">§&#160;<bdi class="secno">4.7.1.7
 									</bdi>Last Modification Date</a>) If <var>data["dateModified"]</var> is set and is
-								not a valid date or date-time per&#160;[<cite><a class="bibref" href="#bib-iso8601"
-										title="Representation of dates and times. ISO 8601:2004."
-										data-link-type="biblio">iso8601</a></cite>], <a href="#dfn-validation-errors"
-									class="internalDFN" data-link-type="dfn">validation error</a>, <a
+								not a valid date or date-time per&#160;[<cite><a class="bibref" data-link-type="biblio"
+										href="#bib-iso8601" title="Representation of dates and times. ISO 8601:2004."
+										>iso8601</a></cite>], <a href="#dfn-validation-errors" class="internalDFN"
+									data-link-type="dfn">validation error</a>, <a
 									href="https://infra.spec.whatwg.org/#map-remove">remove</a>
 								<var>data["dateModified"]</var>.</p>
 						</li>
@@ -5825,10 +5919,10 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 						<li id="validate-pub-date">
 							<p>(<a href="#publication-date" class="sec-ref">§&#160;<bdi class="secno">4.7.1.8
 									</bdi>Publication Date</a>) If <var>data["datePublished"]</var> is set and is not a
-								valid date or date-time per&#160;[<cite><a class="bibref" href="#bib-iso8601"
-										title="Representation of dates and times. ISO 8601:2004."
-										data-link-type="biblio">iso8601</a></cite>], <a href="#dfn-validation-errors"
-									class="internalDFN" data-link-type="dfn">validation error</a>, <a
+								valid date or date-time per&#160;[<cite><a class="bibref" data-link-type="biblio"
+										href="#bib-iso8601" title="Representation of dates and times. ISO 8601:2004."
+										>iso8601</a></cite>], <a href="#dfn-validation-errors" class="internalDFN"
+									data-link-type="dfn">validation error</a>, <a
 									href="https://infra.spec.whatwg.org/#map-remove">remove</a>
 								<var>data["datePublished"]</var>.</p>
 						</li>
@@ -5839,11 +5933,10 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 									href="https://infra.spec.whatwg.org/#list-iterate">for each</a>
 								<var>item</var> of <var>data["inLanguage"]</var>, if <var>item</var> is not <a
 									href="https://tools.ietf.org/html/bcp47#section-2.2.9"
-										>well-formed</a>&#160;[<cite><a class="bibref" href="#bib-bcp47"
-										title="Tags for Identifying Languages" data-link-type="biblio"
-								>bcp47</a></cite>], <a href="#dfn-validation-errors" class="internalDFN"
-									data-link-type="dfn">validation error</a>, <a
-									href="https://infra.spec.whatwg.org/#list-remove">remove</a>
+										>well-formed</a>&#160;[<cite><a class="bibref" data-link-type="biblio"
+										href="#bib-bcp47" title="Tags for Identifying Languages">bcp47</a></cite>], <a
+									href="#dfn-validation-errors" class="internalDFN" data-link-type="dfn">validation
+									error</a>, <a href="https://infra.spec.whatwg.org/#list-remove">remove</a>
 								<var>item</var> from <var>data["inLanguage"]</var>.</p>
 						</li>
 
@@ -5905,8 +5998,8 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 								<li id="links-get-url">
 									<p>let <var>url</var> be the result of running <a
 											href="https://url.spec.whatwg.org/#concept-url-serializer">URL
-											serializer</a>&#160;[<cite><a class="bibref" href="#bib-url"
-												title="URL Standard" data-link-type="biblio">url</a></cite>] on
+											serializer</a>&#160;[<cite><a class="bibref" data-link-type="biblio"
+												href="#bib-url" title="URL Standard">url</a></cite>] on
 											<var>link["url"]</var> with the <var>exclude fragment flag</var> set.</p>
 								</li>
 								<li id="links-check-pub-resource">
@@ -6136,10 +6229,11 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 									<li>
 										<p>if <var>item["language"]</var> is set and its value is not <a
 												href="https://tools.ietf.org/html/bcp47#section-2.2.9"
-													>well-formed</a>&#160;[<cite><a class="bibref" href="#bib-bcp47"
-													title="Tags for Identifying Languages" data-link-type="biblio"
-													>bcp47</a></cite>], <a href="#dfn-validation-errors"
-												class="internalDFN" data-link-type="dfn">validation error</a>, <a
+													>well-formed</a>&#160;[<cite><a class="bibref"
+													data-link-type="biblio" href="#bib-bcp47"
+													title="Tags for Identifying Languages">bcp47</a></cite>], <a
+												href="#dfn-validation-errors" class="internalDFN" data-link-type="dfn"
+												>validation error</a>, <a
 												href="https://infra.spec.whatwg.org/#map-remove">remove</a>
 											<var>item["language"]</var>.</p>
 									</li>
@@ -6204,8 +6298,8 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 												href="https://infra.spec.whatwg.org/#iteration-continue"
 											>continue</a>.</p>
 										<p>Otherwise, if <var>resource["url"]</var> is not a valid URL&#160;[<cite><a
-													class="bibref" href="#bib-url" title="URL Standard"
-													data-link-type="biblio">url</a></cite>], <a
+													class="bibref" data-link-type="biblio" href="#bib-url"
+													title="URL Standard">url</a></cite>], <a
 												href="#dfn-validation-errors" class="internalDFN" data-link-type="dfn"
 												>validation error</a>, <a
 												href="https://infra.spec.whatwg.org/#list-remove">remove</a>
@@ -6216,11 +6310,10 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 									<li>
 										<p>if <a href="#linkedresource-duration"><var>resource["duration"]</var></a> is
 											set and is not a valid duration value, per&#160;[<cite><a class="bibref"
-													href="#bib-iso8601"
+													data-link-type="biblio" href="#bib-iso8601"
 													title="Representation of dates and times. ISO 8601:2004."
-													data-link-type="biblio">iso8601</a></cite>], <a
-												href="#dfn-validation-errors" class="internalDFN" data-link-type="dfn"
-												>validation error</a>, <a
+													>iso8601</a></cite>], <a href="#dfn-validation-errors"
+												class="internalDFN" data-link-type="dfn">validation error</a>, <a
 												href="https://infra.spec.whatwg.org/#map-remove">remove</a>
 											<var>resource["duration"]</var>.</p>
 									</li>
@@ -6377,8 +6470,8 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 									<li id="unique-parse-url">
 										<p>let <var>url</var> be the result of running <a
 												href="https://url.spec.whatwg.org/#concept-url-serializer">URL
-												serializer</a>&#160;[<cite><a class="bibref" href="#bib-url"
-													title="URL Standard" data-link-type="biblio">url</a></cite>] on
+												serializer</a>&#160;[<cite><a class="bibref" data-link-type="biblio"
+													href="#bib-url" title="URL Standard">url</a></cite>] on
 												<var>resource["url"]</var> with <var>exclude fragment flag</var>
 											set.</p>
 									</li>
@@ -6398,10 +6491,10 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 											<li id="alternate-parse-url">
 												<p>let <var>alt_url</var> be the result of running <a
 														href="https://url.spec.whatwg.org/#concept-url-serializer">URL
-														serializer</a>&#160;[<cite><a class="bibref" href="#bib-url"
-															title="URL Standard" data-link-type="biblio">url</a></cite>]
-													on <var>alternate["url"]</var> with <var>exclude fragment flag</var>
-													set.</p>
+														serializer</a>&#160;[<cite><a class="bibref"
+															data-link-type="biblio" href="#bib-url" title="URL Standard"
+															>url</a></cite>] on <var>alternate["url"]</var> with
+														<var>exclude fragment flag</var> set.</p>
 											</li>
 
 											<li id="alternate-parse-test">
@@ -6478,10 +6571,9 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 					<p>To <dfn data-dfn-type="dfn" id="dfn-add-default-values">add default values</dfn> for missing
 						properties in <a href="https://infra.spec.whatwg.org/#ordered-map">map</a>
 						<var>data</var> with an optional <a
-							href="https://html.spec.whatwg.org/multipage/#the-document-object">HTML Document (DOM)
-							Node</a>&#160;[<cite><a class="bibref" href="#bib-html" title="HTML Standard"
-								data-link-type="biblio">html</a></cite>] <var>document</var>, run the following
-						steps:</p>
+							href="https://html.spec.whatwg.org/multipage/dom.html#the-document-object">HTML Document
+							(DOM) Node</a>&#160;[<cite><a class="bibref" data-link-type="biblio" href="#bib-html"
+								title="HTML Standard">html</a></cite>] <var>document</var>, run the following steps:</p>
 
 					<ol>
 						<li id="processing-defaults-title">
@@ -6495,22 +6587,22 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 									<ul>
 										<li>
 											<p>if <var>document</var> is set, if the <a
-													href="https://html.spec.whatwg.org/multipage/#the-title-element"
+													href="https://html.spec.whatwg.org/multipage/semantics.html#the-title-element"
 														><code>title</code></a> element&#160;[<cite><a class="bibref"
-														href="#bib-html" title="HTML Standard" data-link-type="biblio"
+														data-link-type="biblio" href="#bib-html" title="HTML Standard"
 														>html</a></cite>] of <var>document</var> is set and is not
 												empty, set <var>title["value"]</var> to the text content of the
 													<code>title</code> element.</p>
 											<p>Set <var>title["language"]</var> to the <a
-													href="https://html.spec.whatwg.org/multipage/#the-lang-and-xml:lang-attributes"
-													>language</a>&#160;[<cite><a class="bibref" href="#bib-html"
-														title="HTML Standard" data-link-type="biblio">html</a></cite>],
-												if available, and <var>title["direction"]</var> to the <a
-													href="https://html.spec.whatwg.org/multipage/#the-dir-attribute"
-													>base direction</a>&#160;[<cite><a class="bibref" href="#bib-html"
-														title="HTML Standard" data-link-type="biblio">html</a></cite>]
-												if that value is available and its value is either "<code>ltr</code>" or
-													"<code>rtl</code>". </p>
+													href="https://html.spec.whatwg.org/multipage/dom.html#the-lang-and-xml%3Alang-attributes"
+													>language</a>&#160;[<cite><a class="bibref" data-link-type="biblio"
+														href="#bib-html" title="HTML Standard">html</a></cite>], if
+												available, and <var>title["direction"]</var> to the <a
+													href="https://html.spec.whatwg.org/multipage/dom.html#the-dir-attribute"
+													>base direction</a>&#160;[<cite><a class="bibref"
+														data-link-type="biblio" href="#bib-html" title="HTML Standard"
+														>html</a></cite>] if that value is available and its value is
+												either "<code>ltr</code>" or "<code>rtl</code>". </p>
 										</li>
 										<li>
 											<p>otherwise, <a href="#dfn-validation-errors" class="internalDFN"
@@ -6666,9 +6758,9 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 
 			<p>As the manifest is expressed using JSON-LD, the <a href="https://www.w3.org/TR/json-ld11/#privacy"
 					>privacy</a> and <a href="https://www.w3.org/TR/json-ld11/#iana-considerations">security
-					considerations</a> [<cite><a class="bibref" href="#bib-json-ld11" title="JSON-LD 1.1"
-						data-link-type="biblio">json-ld11</a></cite>] detailed in that specification are applicable to
-				all <a href="#extensions">profiles</a> of the manifest.</p>
+					considerations</a> [<cite><a class="bibref" data-link-type="biblio" href="#bib-json-ld11"
+						title="JSON-LD 1.1">json-ld11</a></cite>] detailed in that specification are applicable to all
+					<a href="#extensions">profiles</a> of the manifest.</p>
 
 			<p>Some additional general considerations for profiles include:</p>
 
@@ -6711,7 +6803,7 @@ github.com style (c) Vasily Polovnyov &lt;vast@whiteants.net>
 
 				<p>This definition expresses the expected names, datatypes, and possible restrictions for each member of
 					the manifest after <a href="#manifest-processing">processing</a> using [<cite><a class="bibref"
-							href="#bib-webidl" title="Web IDL" data-link-type="biblio">WebIDL</a></cite>].</p>
+							data-link-type="biblio" href="#bib-webidl" title="Web IDL">WebIDL</a></cite>].</p>
 
 				<div class="note" role="note" id="issue-container-generatedID-31">
 					<div role="heading" class="note-title marker" id="h-note-26" aria-level="4">
@@ -6814,8 +6906,8 @@ enum TextDirection {
 			<h2 id="b-selecting-an-alternate-resource"><bdi class="secno">B. </bdi>Selecting an Alternate Resource<a
 					class="self-link" aria-label="§" href="#app-select-alternate"></a></h2>
 
-			<p><em>This appendix depends on the Infra Standard [<cite><a class="bibref" href="#bib-infra"
-							title="Infra Standard" data-link-type="biblio">infra</a></cite>].</em></p>
+			<p><em>This appendix depends on the Infra Standard [<cite><a class="bibref" data-link-type="biblio"
+							href="#bib-infra" title="Infra Standard">infra</a></cite>].</em></p>
 
 			<p>To <dfn data-dfn-type="dfn" id="dfn-select-an-alternate-resource">select an alternate resource</dfn> for
 				a <a href="#dfn-linkedresources" class="internalDFN" data-link-type="dfn"
@@ -6887,18 +6979,17 @@ enum TextDirection {
 				<p><em>This section is non-normative.</em></p>
 
 				<p>To facilitate navigation within pages and across sites, HTML uses the <a
-						href="https://www.w3.org/TR/html/sections.html#the-nav-element"><code>nav</code>
-							element</a>&#160;[<cite><a class="bibref" href="#bib-html" title="HTML Standard"
-							data-link-type="biblio">html</a></cite>] to express lists of links. Although generic in
-					nature by default, the purpose of a <code>nav</code> element can be more specifically identified by
-					use of the <a href="https://www.w3.org/TR/html/dom.html#aria-role-attribute"><code>role</code>
-						attribute</a>&#160;[<cite><a class="bibref" href="#bib-html" title="HTML Standard"
-							data-link-type="biblio">html</a></cite>]. In particular, the <code>doc-toc</code> role from
-					the [<cite><a class="bibref" href="#bib-dpub-aria-1.0"
-							title="Digital Publishing WAI-ARIA Module 1.0" data-link-type="biblio"
-						>dpub-aria-1.0</a></cite>] vocabulary identifies the <code>nav</code> element as the <a
-						href="#dfn-digital-publications" class="internalDFN" data-link-type="dfn">digital
-						publication's</a> table of contents.</p>
+						href="https://html.spec.whatwg.org/multipage/sections.html#the-nav-element"><code>nav</code>
+						element</a>&#160;[<cite><a class="bibref" data-link-type="biblio" href="#bib-html"
+							title="HTML Standard">html</a></cite>] to express lists of links. Although generic in nature
+					by default, the purpose of a <code>nav</code> element can be more specifically identified by use of
+					the <a href="https://html.spec.whatwg.org/multipage/dom.html#wai-aria"><code>role</code>
+						attribute</a>&#160;[<cite><a class="bibref" data-link-type="biblio" href="#bib-html"
+							title="HTML Standard">html</a></cite>]. In particular, the <code>doc-toc</code> role from
+					the [<cite><a class="bibref" data-link-type="biblio" href="#bib-dpub-aria-1.0"
+							title="Digital Publishing WAI-ARIA Module 1.0">dpub-aria-1.0</a></cite>] vocabulary
+					identifies the <code>nav</code> element as the <a href="#dfn-digital-publications"
+						class="internalDFN" data-link-type="dfn">digital publication's</a> table of contents.</p>
 
 				<p>Including an identifiable table of contents is an accessible way to produce any <a
 						href="#dfn-digital-publications" class="internalDFN" data-link-type="dfn">digital
@@ -6910,31 +7001,40 @@ enum TextDirection {
 
 				<p>Authors have a choice of lists (ordered or unordered) to construct their table of contents. By
 					tagging each link within these lists in anchor tags (<a
-						href="https://www.w3.org/TR/html/textlevel-semantics.html#the-a-element"><code>a</code>
-						elements</a>), user agents can easily differentiate the information they need from any
-					peripheral content (asides) or stylistic tagging that has also been added. The table of contents can
-					consist of both active links (with an <code>href</code> attribute) and inactive links (excluding the
-						<code>href</code> attribute), providing additional flexibility in how the table of contents is
-					constructed (e.g., to omit links to certain headings or only link to certain content in a
-					preview).</p>
+						href="https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-a-element"
+							><code>a</code> elements</a>), user agents can easily differentiate the information they
+					need from any peripheral content (asides) or stylistic tagging that has also been added. The table
+					of contents can consist of both active links (with an <code>href</code> attribute) and inactive
+					links (excluding the <code>href</code> attribute), providing additional flexibility in how the table
+					of contents is constructed (e.g., to omit links to certain headings or only link to certain content
+					in a preview).</p>
+
+				<p>Note, however, that user agents are <strong>not required</strong> to preserve the presentational
+					aspects of the table of contents (i.e., the user agent is typically extracting the information in
+					order to present it in a common way across all publications). User agents are only expected to
+					retain the text content of the link elements, for example, so text styling, inline images and other
+					non-text content might be lost. Similarly, list styling and even how many levels deep of linking to
+					display are at the discretion of the user agent. For this reason, linking to the presentational
+					table of contents so that users are not limited to the machine-processed one is advised.</p>
 			</section>
 
 			<section id="app-toc-html">
 				<h3 id="c-2-html-structure"><bdi class="secno">C.2 </bdi>HTML Structure<a class="self-link"
 						aria-label="§" href="#app-toc-html"></a></h3>
 
-				<p>The table of contents is expressed via an [<cite><a class="bibref" href="#bib-html"
-							title="HTML Standard" data-link-type="biblio">html</a></cite>]&#160;element (typically a <a
-						href="https://www.w3.org/TR/html/sections.html#the-nav-element"><code>nav</code> element</a>).
-					This element <em class="rfc2119" title="MUST">MUST</em> be identified by the <code>role</code>
-							attribute&#160;[<cite><a class="bibref" href="#bib-html" title="HTML Standard"
-							data-link-type="biblio">html</a></cite>] value "<code>doc-toc</code>"&#160;[<cite><a
-							class="bibref" href="#bib-dpub-aria-1.0" title="Digital Publishing WAI-ARIA Module 1.0"
-							data-link-type="biblio">dpub-aria-1.0</a></cite>], and <em class="rfc2119" title="MUST"
-						>MUST</em> be the first element in the document in <a
-						href="https://dom.spec.whatwg.org/#concept-tree-order">document tree order</a>&#160;[<cite><a
-							class="bibref" href="#bib-dom" title="DOM Standard" data-link-type="biblio">dom</a></cite>]
-					with that <code>role</code> value.</p>
+				<p>The table of contents is expressed via an [<cite><a class="bibref" data-link-type="biblio"
+							href="#bib-html" title="HTML Standard">html</a></cite>]&#160;element (typically a <a
+						href="https://html.spec.whatwg.org/multipage/sections.html#the-nav-element"><code>nav</code>
+						element</a>). This element <em class="rfc2119" title="MUST">MUST</em> be identified by the
+						<code>role</code> attribute&#160;[<cite><a class="bibref" data-link-type="biblio"
+							href="#bib-html" title="HTML Standard">html</a></cite>] value
+							"<code>doc-toc</code>"&#160;[<cite><a class="bibref" data-link-type="biblio"
+							href="#bib-dpub-aria-1.0" title="Digital Publishing WAI-ARIA Module 1.0"
+						>dpub-aria-1.0</a></cite>], and <em class="rfc2119" title="MUST">MUST</em> be the first element
+					in the document in <a href="https://dom.spec.whatwg.org/#concept-tree-order">document tree
+							order</a>&#160;[<cite><a class="bibref" data-link-type="biblio" href="#bib-dom"
+							title="DOM Standard">dom</a></cite>] with that <code>role</code> value. The element <em
+						class="rfc2119" title="MAY">MAY</em> be hidden from users.</p>
 
 				<p>The manifest <em class="rfc2119" title="SHOULD">SHOULD</em>
 					<a href="#table-of-contents">identify the resource</a> that contains the table of contents.</p>
@@ -6947,9 +7047,9 @@ enum TextDirection {
 					<dd>
 						<p>Although a title for the table of contents is optional, to avoid having a user agent generate
 							a placeholder title when one is needed, it is advised to add one. Titles are specified using
-							any of the [<cite><a class="bibref" href="#bib-html" title="HTML Standard"
-									data-link-type="biblio">html</a></cite>]&#160;<a
-								href="https://www.w3.org/TR/html/sections.html#the-h1-h2-h3-h4-h5-and-h6-elements"
+							any of the [<cite><a class="bibref" data-link-type="biblio" href="#bib-html"
+									title="HTML Standard">html</a></cite>]&#160;<a
+								href="https://html.spec.whatwg.org/multipage/sections.html#the-h1,-h2,-h3,-h4,-h5,-and-h6-elements"
 									><code>h1</code> through <code>h6</code> elements</a>. Note that only the first such
 							element is recognized as the title. If a heading element is not found before the <a
 								href="#toc-list-links">list of links</a>, user agents will assume that one has not been
@@ -6957,16 +7057,16 @@ enum TextDirection {
 					</dd>
 					<dt id="toc-list-links">List of Links</dt>
 					<dd>
-						<p>The first [<cite><a class="bibref" href="#bib-html" title="HTML Standard"
-									data-link-type="biblio">html</a></cite>]&#160;<a
-								href="https://www.w3.org/TR/html/grouping-content.html#the-ol-element"
-								><code>ol</code></a> or <a
-								href="https://www.w3.org/TR/html/grouping-content.html#the-ul-element"
-								><code>ul</code></a> list element encountered in the <code>nav</code> element is assumed
-							to contain the list that defines the links into the content. This list will be found even if
-							it is nested inside of <a
-								href="https://www.w3.org/TR/html/grouping-content.html#the-div-element"
-								><code>div</code></a> elements, for example, as the algorithm <a
+						<p>The first [<cite><a class="bibref" data-link-type="biblio" href="#bib-html"
+									title="HTML Standard">html</a></cite>]&#160;<a
+								href="https://html.spec.whatwg.org/multipage/grouping-content.html#the-ol-element"
+									><code>ol</code></a> or <a
+								href="https://html.spec.whatwg.org/multipage/grouping-content.html#the-ul-element"
+									><code>ul</code></a> list element encountered in the <code>nav</code> element is
+							assumed to contain the list that defines the links into the content. This list will be found
+							even if it is nested inside of <a
+								href="https://html.spec.whatwg.org/multipage/grouping-content.html#the-div-element"
+									><code>div</code></a> elements, for example, as the algorithm <a
 								href="#toc-ignored-elements">ignores elements</a> that are not relevant to its
 							processing. The list cannot occur inside of any <a href="#toc-skipped-elements">skipped
 								elements</a>, however, since their internal contents are not evaluated.</p>
@@ -6977,14 +7077,16 @@ enum TextDirection {
 					<dt id="toc-branches">Branches</dt>
 					<dd>
 						<p>If the table of contents is considered as a tree of links, then each list item (<a
-								href="https://www.w3.org/TR/html/grouping-content.html#the-li-element"><code>li</code>
-								element</a>) inside of the <a href="#toc-list-links">list of links</a> represents one
-							branch. Each of these branches has to have a name and optional destination in order to be
-							presented to users, and this information is obtained from the first <a
-								href="https://www.w3.org/TR/html/textlevel-semantics.html#the-a-element"><code>a</code>
-								element</a> found within the list item, <a href="#toc-ignored-elements">wherever it is
-								nested</a> (again, excluding any <code>a</code> elements inside of <a
-								href="#toc-skipped-elements">skipped elements</a>.)</p>
+								href="https://html.spec.whatwg.org/multipage/grouping-content.html#the-li-element"
+									><code>li</code> element</a>) inside of the <a href="#toc-list-links">list of
+								links</a> represents one branch. Each of these branches has to have a name and optional
+							destination in order to be presented to users, and this information is obtained from the
+							first <a
+								href="https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-a-element"
+									><code>a</code> element</a> found within the list item, <a
+								href="#toc-ignored-elements">wherever it is nested</a> (again, excluding any
+								<code>a</code> elements inside of <a href="#toc-skipped-elements">skipped
+							elements</a>.)</p>
 						<p>The link destination for the branch is obtained from the <code>a</code> element's
 								<code>href</code> attribute, when specified. This attribute can be omitted if a link is
 							not available (e.g., in a preview) or not relevant (e.g., a grouping header). When providing
@@ -6999,17 +7101,18 @@ enum TextDirection {
 					<dt id="toc-skipped-elements">Skipped Elements</dt>
 					<dd>
 						<p>A small set of elements are ignored when the parsing table of contents to avoid
-							misinterpretation. These are the [<cite><a class="bibref" href="#bib-html"
-									title="HTML Standard" data-link-type="biblio">html</a></cite>]&#160;<a
-								href="https://www.w3.org/TR/html/dom.html#sectioning-content">sectioning content
-								elements</a> and <a href="https://www.w3.org/TR/html/sections.html#sectioning-roots"
-								>sectioning root elements</a>. The reason they are ignored is because they can defined
-							their own outlines (i.e., they can represent embedded content that is self-contained and not
+							misinterpretation. These are the [<cite><a class="bibref" data-link-type="biblio"
+									href="#bib-html" title="HTML Standard">html</a></cite>]&#160;<a
+								href="https://html.spec.whatwg.org/multipage/dom.html#sectioning-content-2">sectioning
+								content elements</a> and <a
+								href="https://html.spec.whatwg.org/multipage/sections.html#sectioning-root">sectioning
+								root elements</a>. The reason they are ignored is because they can defined their own
+							outlines (i.e., they can represent embedded content that is self-contained and not
 							necessarily related to the structure of content links).</p>
 						<p>Any element that has its <a
-								href="https://www.w3.org/TR/html/editing.html#the-hidden-attribute"><code>hidden</code>
-								attribute</a> set is also skipped, since hidden elements are not intended to be directly
-							accessed by users.</p>
+								href="https://html.spec.whatwg.org/multipage/interaction.html#the-hidden-attribute"
+									><code>hidden</code> attribute</a> set is also skipped, since hidden elements are
+							not intended to be directly accessed by users.</p>
 						<p>Although these elements can be included in the <code>nav</code> element, care has to be taken
 							not to embed important content within them (e.g., do not wrap a <code>section</code> element
 							around the list item that contains all the links into the content).</p>
@@ -7137,46 +7240,61 @@ enum TextDirection {
 				<h3 id="c-3-user-agent-processing"><bdi class="secno">C.3 </bdi>User Agent Processing<a
 						class="self-link" aria-label="§" href="#app-toc-ua"></a></h3>
 
-				<p><em>This section depends on the Infra Standard [<cite><a class="bibref" href="#bib-infra"
-								title="Infra Standard" data-link-type="biblio">infra</a></cite>].</em></p>
+				<p><em>This section depends on the Infra Standard [<cite><a class="bibref" data-link-type="biblio"
+								href="#bib-infra" title="Infra Standard">infra</a></cite>].</em></p>
 
 				<p>This section defines an algorithm for extracting a table of contents from a <code>nav</code> element.
 					It is defined in terms of a walk over the nodes of a DOM tree, in <a
-						href="https://www.w3.org/TR/html/infrastructure.html#tree-order">tree order</a>, with each node
-					being visited when it is <em>entered</em> and when it is <em>exited</em> during the walk. Each time
-					a node is visited, it can be seen as triggering an <em>enter</em> or <em>exit</em> event. In some
-					steps, user agents are provided a choice in how to process the content to provide flexibility for
-					different presentation models.</p>
+						href="https://dom.spec.whatwg.org/#concept-tree-order">tree order</a>&#160;[<cite><a
+							class="bibref" data-link-type="biblio" href="#bib-dom" title="DOM Standard">dom</a></cite>],
+					with each node being visited when it is <em>entered</em> and when it is <em>exited</em> during the
+					walk. Each time a node is visited, it can be seen as triggering an <em>enter</em> or <em>exit</em>
+					event. In some steps, user agents are provided a choice in how to process the content to provide
+					flexibility for different presentation models.</p>
 
 				<div class="note" role="note" id="issue-container-generatedID-32">
 					<div role="heading" class="note-title marker" id="h-note-27" aria-level="4">
 						<span>Note</span>
 					</div>
-					<p class="">User agents can process and internalize the resulting structure in whatever language and
-						form is appropriate.</p>
+					<p class="">This algorithm is not defined in purely event driven terms, as inspecting all descendant
+						nodes is not always necessary to obtain the needed information from the DOM. In some cases, an
+						element, and all its descendants, is skipped immediately after it is processed on
+						<em>enter</em>. An event approach could be applied, but would require modifying the algorithm to
+						process/ignore the skipped nodes.</p>
+				</div>
+
+
+				<div class="note" role="note" id="issue-container-generatedID-33">
+					<div role="heading" class="note-title marker" id="h-note-28" aria-level="4">
+						<span>Note</span>
+					</div>
+					<p class="">User agents can process and internalize the resulting structure using any language that
+						can represent the final form of the data.</p>
 				</div>
 
 				<p>For the purposes of this algorithm, a <dfn data-dfn-type="dfn" id="dfn-list-element">list
-						element</dfn> is defined as either an [<cite><a class="bibref" href="#bib-html"
-							title="HTML Standard" data-link-type="biblio">html</a></cite>]&#160;<a
-						href="https://www.w3.org/TR/html/grouping-content.html#the-ol-element"><code>ol</code></a> or <a
-						href="https://www.w3.org/TR/html/grouping-content.html#the-ul-element"><code>ul</code></a>
-					element.</p>
+						element</dfn> is defined as either an [<cite><a class="bibref" data-link-type="biblio"
+							href="#bib-html" title="HTML Standard">html</a></cite>]&#160;<a
+						href="https://html.spec.whatwg.org/multipage/grouping-content.html#the-ol-element"
+							><code>ol</code></a> or <a
+						href="https://html.spec.whatwg.org/multipage/grouping-content.html#the-ul-element"
+							><code>ul</code></a> element.</p>
 
 				<p>The following algorithm <em class="rfc2119" title="MUST">MUST</em> be applied to a walk of a DOM
-					subtree rooted at the table of contents element determined as follows:</p>
+					subtree rooted at the first element in document order with the <code>role</code> attribute value
+						<code>doc-toc</code>, regardless of whether the element has been <a
+						href="https://html.spec.whatwg.org/multipage/interaction.html#the-hidden-attribute"
+						>declaratively hidden</a>&#160;[<cite><a class="bibref" data-link-type="biblio" href="#bib-html"
+							title="HTML Standard">html</a></cite>] or styled by CSS not to be visible:</p>
 
-				<ol>
-					<li>
-						<p>if the <code>LinkedResource</code> that identifies the table of contents includes a fragment
-							identifier in its URL, the element referenced by the fragment identifier, provided the
-							element has the <code>role</code> attribute value <code>doc-toc</code>.</p>
-					</li>
-					<li>
-						<p>otherwise, the first element in document order with the <code>role</code> attribute value
-								<code>doc-toc</code>.</p>
-					</li>
-				</ol>
+				<div class="note" role="note" id="issue-container-generatedID-34">
+					<div role="heading" class="note-title marker" id="h-note-29" aria-level="4">
+						<span>Note</span>
+					</div>
+					<p class="">The rules for locating the resource containing the table of contents element are defined
+						in <a href="#contents" class="sec-ref">§&#160;<bdi class="secno">4.8.1.3 </bdi>Table of
+							Contents</a>.</p>
+				</div>
 
 				<p>If a table of contents element is not found, the publication does not have a table of contents that
 					can be used for machine rendering purposes.</p>
@@ -7207,25 +7325,27 @@ enum TextDirection {
 					</li>
 
 					<li id="toc-initialize-current">
-						<p>Let <var>current_toc_branch</var> be a variable set to <a
+						<p>Let <var>current_toc_node</var> be a variable set to <a
 								href="https://infra.spec.whatwg.org/#nulls">null</a>.</p>
 						<details>
 							<summary>Explanation</summary>
-							<p><var>current_toc_branch</var> is used to hold the map that represents the branch of the
+							<p><var>current_toc_node</var> is used to hold the map that represents the branch of the
 								table of contents that is currently being processed.</p>
 						</details>
 					</li>
 
 					<li id="toc-walk-dom">
-						<p>Walk over the DOM in <a href="https://www.w3.org/TR/html/infrastructure.html#tree-order">tree
-								order</a>, starting with the element the table of contents is being built from, and
-							trigger the first relevant step below for each element as the walk enters and exits it.</p>
+						<p>Walk over the DOM in <a href="https://dom.spec.whatwg.org/#concept-tree-order">tree
+									order</a>&#160;[<cite><a class="bibref" data-link-type="biblio" href="#bib-dom"
+									title="DOM Standard">dom</a></cite>], starting with the element the table of
+							contents is being built from, and trigger the first relevant step below for each element as
+							the walk enters and exits it.</p>
 						<ol>
 							<li id="toc-dom-enter-heading">
 								<p>
 									<strong>When entering a <a
-											href="https://www.w3.org/TR/html/dom.html#heading-content-2">heading
-											content</a> element:</strong>
+											href="https://html.spec.whatwg.org/multipage/dom.html#heading-content-2"
+											>heading content</a> element:</strong>
 								</p>
 								<p>Run these steps:</p>
 								<ol>
@@ -7239,10 +7359,9 @@ enum TextDirection {
 												calculating the <a
 													href="https://www.w3.org/TR/accname-1.1/#mapping_additional_nd_te"
 													>accessible name</a>&#160;[<cite><a class="bibref"
-														href="#bib-accname-1.1"
+														data-link-type="biblio" href="#bib-accname-1.1"
 														title="Accessible Name and Description Computation 1.1"
-														data-link-type="biblio">accname-1.1</a></cite>] of the
-												element).</li>
+														>accname-1.1</a></cite>] of the element).</li>
 										</ul>
 										<p>If the resulting value of <var>toc["name"]</var> is an empty <a
 												href="https://infra.spec.whatwg.org/#string">string</a> (e.g., after
@@ -7250,7 +7369,7 @@ enum TextDirection {
 											whitespace), set <var>toc["name"]</var> either to a placeholder value or to
 												<a href="https://infra.spec.whatwg.org/#nulls">null</a>.</p>
 									</li>
-									<li>Exit the element and continue processing with the next element.</li>
+									<li>Skip further processing of the element and continue to the next.</li>
 								</ol>
 								<details>
 									<summary>Explanation</summary>
@@ -7312,17 +7431,16 @@ enum TextDirection {
 												>null</a>.</p>
 									</li>
 									<li>
-										<p>If <em>current_toc_branch</em> is not <a
+										<p>If <em>current_toc_node</em> is not <a
 												href="https://infra.spec.whatwg.org/#nulls">null</a>:</p>
 										<ol>
-											<li>If <var>current_toc_branch["entries"]</var> is <a
+											<li>If <var>current_toc_node["entries"]</var> is <a
 													href="https://infra.spec.whatwg.org/#nulls">null</a> or a non-empty
-													<a href="https://infra.spec.whatwg.org/#list">list</a>, exit the
-												element and continue processing with the next element.</li>
+													<a href="https://infra.spec.whatwg.org/#list">list</a>, skip further
+												processing of the element and continue to the next.</li>
 											<li>Otherwise, <a href="https://infra.spec.whatwg.org/#stack-push">push</a>
-												the <a href="https://infra.spec.whatwg.org/#ordered-map">map</a> in
-													<var>current_toc_branch</var> onto <var>branches</var> and set
-													<var>current_toc_branch</var> to <a
+												<var>current_toc_node</var> onto <var>branches</var> and then set
+													<var>current_toc_node</var> to <a
 													href="https://infra.spec.whatwg.org/#nulls">null</a>.</li>
 										</ol>
 									</li>
@@ -7331,8 +7449,8 @@ enum TextDirection {
 										<ol>
 											<li>If <var>toc["entries"]</var> is <a
 													href="https://infra.spec.whatwg.org/#nulls">null</a> or a non-empty
-													<a href="https://infra.spec.whatwg.org/#list">list</a>, exit the
-												element and continue processing with the next element.</li>
+													<a href="https://infra.spec.whatwg.org/#list">list</a>, skip further
+												processing of the element and continue to the next.</li>
 											<li>Otherwise, do nothing.</li>
 										</ol>
 									</li>
@@ -7341,14 +7459,14 @@ enum TextDirection {
 									<summary>Explanation</summary>
 									<p>This algorithm does not process multiple lists in a single branch or at the root
 										of the <code>nav</code> element, so if a list has already been encountered (the
-											<code>entries</code> property contains one or more branches or is set to <a
+											<var>entries</var> property contains one or more branches or is set to <a
 											href="https://infra.spec.whatwg.org/#nulls">null</a>), this list is
 										skipped.</p>
-									<p>If a list is encountered and the table of contents (<code>toc</code>) still does
+									<p>If a list is encountered and the table of contents (<var>toc</var>) still does
 										not have a name (i.e., no heading element has been encountered), the table of
 										contents is assumed to not have a heading (i.e., the heading for the table of
 										contents cannot appear after the first list of entries). The value of the
-											<code>name</code> property is changed from an empty string to <a
+											<var>name</var> property is changed from an empty string to <a
 											href="https://infra.spec.whatwg.org/#nulls">null</a> as no further headings
 										encountered apply, either.</p>
 								</details>
@@ -7359,84 +7477,90 @@ enum TextDirection {
 									<strong>When exiting a <a href="#dfn-list-element" class="internalDFN"
 											data-link-type="dfn">list element</a>:</strong>
 								</p>
-								<p>If <var>branches</var> is not empty, <a
-										href="https://infra.spec.whatwg.org/#stack-pop">pop</a> the top <a
-										href="https://infra.spec.whatwg.org/#ordered-map">map</a> from
-										<var>branches</var> and set <var>current_toc_branch</var> to it.</p>
+								<ol>
+									<li>
+										<p>If <var>branches</var> is not empty, <a
+												href="https://infra.spec.whatwg.org/#stack-pop">pop</a> the top <a
+												href="https://infra.spec.whatwg.org/#ordered-map">map</a> from
+												<var>branches</var> and set <var>current_toc_node</var> to it.</p>
+									</li>
+									<li>
+										<p>Otherwise, if <var>toc.entries</var> contains an empty <a
+												href="https://infra.spec.whatwg.org/#list">list</a>, set it to <a
+												href="https://infra.spec.whatwg.org/#nulls">null</a>.</p>
+									</li>
+								</ol>
 								<details>
 									<summary>Explanation</summary>
-									<p>This resets <var>current_toc_branch</var> back to the parent object after all of
-										its child branches have been processed.</p>
+									<p>This step resets <var>current_toc_node</var> back to the parent object after all
+										of its child branches have been processed.</p>
+									<p>If there are no branches in the stack, the <var>toc.entries</var> is set to null
+										if it doesn't contain any items (to avoid processing any further lists at the
+										root level).</p>
 								</details>
 							</li>
 
 							<li id="toc-dom-enter-li">
 								<p>
 									<strong>When entering a <a
-											href="https://www.w3.org/TR/html/grouping-content.html#the-li-element">list
-											item</a> element, set <var>current_toc_branch</var> to the following <a
+											href="https://html.spec.whatwg.org/multipage/grouping-content.html#the-li-element"
+											>list item</a> element, set <var>current_toc_node</var> to the following <a
 											href="https://infra.spec.whatwg.org/#ordered-map">map</a>:</strong>
 								</p>
 								<pre aria-busy="false"><code class="hljs javascript">«[
-    <span class="hljs-string">"name"</span> → <span class="hljs-string">""</span>,
-    <span class="hljs-string">"url"</span>  → <span class="hljs-string">""</span>,
-    <span class="hljs-string">"type"</span> → <span class="hljs-string">""</span>,
-    <span class="hljs-string">"rel"</span>  → <span class="hljs-string">""</span>,
+    <span class="hljs-string">"name"</span> → <span class="hljs-literal">null</span>,
+    <span class="hljs-string">"url"</span>  → <span class="hljs-literal">null</span>,
+    <span class="hljs-string">"type"</span> → <span class="hljs-literal">null</span>,
+    <span class="hljs-string">"rel"</span>  → <span class="hljs-literal">null</span>,
     <span class="hljs-string">"entries"</span> → « »
 ]»</code></pre>
 								<details>
 									<summary>Explanation</summary>
 									<p>Each list item represents a possible new branch in the table of contents, so
 										whenever one is encountered a new blank object is created in
-											<var>current_toc_branch</var>.</p>
+											<var>current_toc_node</var>.</p>
 									<p>This object gets populated with information as a descendant <code>a</code>
 										element and list are encountered.</p>
 								</details>
 							</li>
 
-							<li id="toc-dom-exist-list">
+							<li id="toc-dom-exit-li">
 								<p>
 									<strong>When exiting a <a
-											href="https://www.w3.org/TR/html/grouping-content.html#the-li-element">list
-											item</a> element:</strong>
+											href="https://html.spec.whatwg.org/multipage/grouping-content.html#the-li-element"
+											>list item</a> element:</strong>
 								</p>
 								<p>Run these steps:</p>
 								<ol>
 									<li>
-										<p>If <var>current_toc_branch["entries"]</var> contains an empty <a
+										<p>If <var>current_toc_node["entries"]</var> contains an empty <a
 												href="https://infra.spec.whatwg.org/#list">list</a>, set it to <a
 												href="https://infra.spec.whatwg.org/#nulls">null</a>.</p>
 									</li>
 									<li>
-										<p>If <var>branches</var> is not empty:</p>
+										<p>If <var>current_toc_node["name"]</var> is an empty string:</p>
 										<ol>
-											<li>if the <var>current_toc_branch["entries"]</var> contains a non-empty <a
-													href="https://infra.spec.whatwg.org/#list">list</a>, and
-													<var>current_toc_branch["name"]</var> is an empty string, set
-													<var>current_toc_branch["name"]</var> to a placeholder value or <a
+											<li>if <var>current_toc_node["entries"]</var> is not <a
+													href="https://infra.spec.whatwg.org/#nulls">null</a>, set
+													<var>current_toc_node["name"]</var> to a placeholder value or <a
 													href="https://infra.spec.whatwg.org/#nulls">null</a>;</li>
-											<li>if the <var>current_toc_branch["entries"]</var> contains an empty <a
-													href="https://infra.spec.whatwg.org/#list">list</a>, and
-													<code>current_toc_branch["name"]</code> is an empty <a
-													href="https://infra.spec.whatwg.org/#string">string</a>, set
-													<var>current_toc_branch</var> to <a
+											<li>otherwise, set <var>current_toc_node</var> to <a
 													href="https://infra.spec.whatwg.org/#nulls">null</a> and exit this
 												processing step.</li>
 										</ol>
-										<p><a href="https://infra.spec.whatwg.org/#list-append">Append</a> the <a
-												href="https://infra.spec.whatwg.org/#ordered-map">map</a> in
-												<var>current_toc_branch</var> to the <var>entries</var> property of the
-												<a href="https://infra.spec.whatwg.org/#ordered-map">map</a> at the top
-											of <var>branches</var>.</p>
 									</li>
 									<li>
-										<p>Otherwise, <a href="https://infra.spec.whatwg.org/#list-append">append</a>
-											the <a href="https://infra.spec.whatwg.org/#ordered-map">map</a> in
-												<var>current_toc_branch</var> to <var>toc["entries"]</var>.</p>
+										<p>If <var>branches</var> is not empty, <a
+												href="https://infra.spec.whatwg.org/#list-append">append</a>
+											<var>current_toc_node</var> to the <var>entries</var> property of the <a
+												href="https://infra.spec.whatwg.org/#ordered-map">map</a> at the top of
+												<var>branches</var>. Otherwise, <a
+												href="https://infra.spec.whatwg.org/#list-append">append</a>
+											<var>current_toc_node</var> to <var>toc["entries"]</var>.</p>
 									</li>
 
 									<li>
-										<p>Set <var>current_toc_branch</var> to <a
+										<p>Set <var>current_toc_node</var> to <a
 												href="https://infra.spec.whatwg.org/#nulls">null</a>.</p>
 									</li>
 								</ol>
@@ -7449,11 +7573,11 @@ enum TextDirection {
 										either supply a placeholder value of its own creation or set the value to null.
 										If it does not have a name or any branches, it is invalid and is discarded.</p>
 									<p>To determine where to merge the branch, the stack is checked. If there are no
-										items in the stack, it is added into the <code>entries</code> property of the
-										root <em>toc</em> object (i.e., it is a top-level branch). Otherwise, it gets
-										added into the <code>entries</code> property of the object immediately preceding
+										items in the stack, it is added into the <var>entries</var> property of the root
+											<em>toc</em> object (i.e., it is a top-level branch). Otherwise, it gets
+										added into the <var>entries</var> property of the object immediately preceding
 										it in the stack.</p>
-									<p>As a final step, <var>current_toc_branch</var> is reset back to
+									<p>As a final step, <var>current_toc_node</var> is reset back to
 										<code>null</code>.</p>
 									<aside class="example" id="example-71-visualization-of-a-branch-merge">
 										<div class="marker">
@@ -7461,15 +7585,16 @@ enum TextDirection {
 													>Example<bdi> 71</bdi></a>
 											<span class="example-title">: Visualization of a branch merge.</span>
 										</div>
-										<p>If the following two maps are in <var>current_toc_branch</var></p>
+										<p>If the following map is in <var>branches</var>:</p>
 										<pre aria-busy="false"><code class="hljs javascript">«[
     <span class="hljs-string">"name"</span>    → <span class="hljs-string">"Section 1"</span>,
     <span class="hljs-string">"url"</span>     → <span class="hljs-string">"http://example.com/contents.html#s1"</span>,
     <span class="hljs-string">"type"</span>    → <span class="hljs-string">"text/html"</span>,
     <span class="hljs-string">"rel"</span>     → <span class="hljs-literal">null</span>,
     <span class="hljs-string">"entries"</span> → « »
-]»,
-«[
+]»</code></pre>
+										<p>And the following map is in <var>current_toc_node:</var></p>
+										<pre aria-busy="false"><code class="hljs javascript">«[
     <span class="hljs-string">"name"</span>    → <span class="hljs-string">"Section 1.1"</span>,
     <span class="hljs-string">"url"</span>     → <span class="hljs-string">"http://example.com/contents.html#s1.1"</span>,
     <span class="hljs-string">"type"</span>    → <span class="hljs-string">"text/html"</span>,
@@ -7499,22 +7624,21 @@ enum TextDirection {
 							<li id="toc-dom-enter-a">
 								<p>
 									<strong>When entering an <a
-											href="https://www.w3.org/TR/html/textlevel-semantics.html#the-a-element"
-											>anchor</a> element and <var>current_toc_branch</var> is not <a
+											href="https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-a-element"
+											>anchor</a> element and <var>current_toc_node</var> is not <a
 											href="https://infra.spec.whatwg.org/#nulls">null</a>:</strong>
 								</p>
 								<p>Run these steps:</p>
 								<ol>
 									<li>
-										<p>If <var>current_toc_branch["name"]</var> is not an empty <a
-												href="https://infra.spec.whatwg.org/#string">string</a>, do nothing.</p>
+										<p>If <var>current_toc_node["name"]</var> is not <a
+												href="https://infra.spec.whatwg.org/#nulls">null</a>, do nothing.</p>
 									</li>
 									<li>
 										<p>Otherwise:</p>
 										<ol>
 											<li>
-												<p>Set <var>current_toc_branch["name"]</var> to one of the
-													following:</p>
+												<p>Set <var>current_toc_node["name"]</var> to one of the following:</p>
 												<ul>
 													<li>the descendant content of the anchor element (to preserve any
 														HTML tags);</li>
@@ -7522,47 +7646,36 @@ enum TextDirection {
 														calculating the <a
 															href="https://www.w3.org/TR/accname-1.1/#mapping_additional_nd_te"
 															>accessible name</a>&#160;[<cite><a class="bibref"
-															href="#bib-accname-1.1"
+															data-link-type="biblio" href="#bib-accname-1.1"
 															title="Accessible Name and Description Computation 1.1"
-															data-link-type="biblio">accname-1.1</a></cite>] of the
-														element).</li>
+															>accname-1.1</a></cite>] of the element).</li>
 												</ul>
-												<p>If the resulting value of <code>current_toc_branch["name"]</code> is
-													an empty string (e.g., after removing any presentational elements
-													and trimming all leading and trailing whitespace), set
-														<code>current_toc_branch["name"]</code> property to <a
-														href="https://infra.spec.whatwg.org/#nulls">null</a>.</p>
 											</li>
 											<li>If the element has an <code>href</code> attribute and the URL in the
-												attribute resolves to a resource in the <a
-													href="#dfn-default-reading-order" class="internalDFN"
-													data-link-type="dfn">default reading order</a> or <a
-													href="#dfn-resource-list" class="internalDFN" data-link-type="dfn"
-													>resource list</a>, set <var>current_toc_branch["url"]</var> to the
-												value. Otherwise, set <var>current_toc_branch["url"]</var> to <a
-													href="https://infra.spec.whatwg.org/#nulls">null</a>.</li>
+												attribute resolves to a resource in <a href="#reslist-end"
+													>uniqueResources</a>, set <var>current_toc_node["url"]</var> to the
+												value.</li>
 											<li>If the element has a <code>type</code> attribute, and the value of the
 												attribute is not an empty string after trimming leading and trailing
-												white space, set <var>current_toc_branch["type"]</var> to the trimmed
-												value. Otherwise, set <var>current_toc_branch["type"]</var> to <a
-													href="https://infra.spec.whatwg.org/#nulls">null</a>.</li>
+												white space, set <var>current_toc_node["type"]</var> to the trimmed
+												value.</li>
 											<li>If the element has a <code>rel</code> attribute, and the value of the
 												attribute is not an empty string after trimming leading and trailing
-												white space, set <var>current_toc_branch["rel"]</var> to the trimmed
-												value. Otherwise, set <var>current_toc_branch["rel"]</var> to <a
-													href="https://infra.spec.whatwg.org/#nulls">null</a>.</li>
+												white space, split the trimmed value on whitespace and set
+													<var>current_toc_node["rel"]</var> to the resulting <a
+													href="https://infra.spec.whatwg.org/#list">list</a> of tokens.</li>
 										</ol>
-										<p>Exit the element and continue processing with the next element.</p>
+										<p>Skip further processing of the element and continue to the next.</p>
 									</li>
 								</ol>
 								<details>
 									<summary>Explanation</summary>
-									<p>This step processes anchor tags to obtain values for the <code>name</code> and
-											<code>url</code> properties of a branch.</p>
+									<p>This step processes anchor tags to obtain values for the <var>name</var> and
+											<var>url</var> properties of a branch.</p>
 									<p>If the name of the current branch is already defined, then processing of this
 										element is terminated (i.e., to avoid processing multiple links for a single
 										branch).</p>
-									<p>Whether a user agent sets the <code>name</code> of the entry to the descendant
+									<p>Whether a user agent sets the <var>name</var> of the entry to the descendant
 										content of the <code>a</code> element, or generates a text string from it,
 										depends on whether it will re-use any descendant tagging in the presentation
 										(e.g., to retain images, MathML, ruby and other content that does not translate
@@ -7595,14 +7708,14 @@ enum TextDirection {
 							<li id="toc-dom-enter-sectioning">
 								<p>
 									<strong>When entering a <a
-											href="https://www.w3.org/TR/html/dom.html#sectioning-content-2">sectioning
-											content</a> element, a <a
-											href="https://www.w3.org/TR/html/sections.html#sectioning-roots">sectioning
-											root</a> element, or an element with a <a
-											href="https://www.w3.org/TR/html/editing.html#element-attrdef-global-hidden"
+											href="https://html.spec.whatwg.org/multipage/dom.html#sectioning-content-2"
+											>sectioning content</a> element, a <a
+											href="https://html.spec.whatwg.org/multipage/sections.html#sectioning-root"
+											>sectioning root</a> element, or an element with a <a
+											href="https://html.spec.whatwg.org/multipage/interaction.html#the-hidden-attribute"
 											>hidden</a> attribute:</strong>
 								</p>
-								<p>Exit the element and continue processing with the next element.</p>
+								<p>Skip further processing of the element and continue to the next.</p>
 								<details>
 									<summary>Explanation</summary>
 									<p>As sectioning and sectioning root elements can define their own outlines,
@@ -7628,10 +7741,8 @@ enum TextDirection {
 
 					<li id="toc-finish">
 						<p>After completing the DOM walk, if <var>toc["entries"]</var> contains a non-empty <a
-								href="https://infra.spec.whatwg.org/#list">list</a>, <var>toc</var> represents the
-							machine-processed table of contents.</p>
-						<p>Otherwise, the digital publication does not have a table of contents that can be used for
-							machine rendering purposes.</p>
+								href="https://infra.spec.whatwg.org/#list">list</a>, return <var>toc</var>. Otherwise,
+							return <code>null</code>.</p>
 						<details>
 							<summary>Explanation</summary>
 							<p>If the <code>entries</code> array in the root <em>toc</em> object does not contain any
@@ -7643,21 +7754,50 @@ enum TextDirection {
 				</ol>
 			</section>
 		</section>
+		<section id="change-log">
+			<h2 id="d-change-log"><bdi class="secno">D. </bdi>Change Log<a class="self-link" aria-label="§"
+					href="#change-log"></a></h2>
+
+			<section id="changes-since-candidate-recommendation">
+				<h3 id="d-1-changes-since-candidate-recommendation"><bdi class="secno">D.1 </bdi>Changes since Candidate
+						Recommendation<a class="self-link" aria-label="§" href="#changes-since-candidate-recommendation"
+					></a></h3>
+				<p>The following substantive changes have been made since the last release:</p>
+				<ul>
+					<li>28-Jan-2020: Reverted to using only role=doc-toc to identify the table of contents due to
+						problems with using fragments identifiers. See issue <a
+							href="https://github.com/w3c/pub-manifest/issues/176">176</a>.</li>
+					<li>28-Jan-2020: Clarified that visual hiding does not affect the selection of the table of
+						contents. See issue <a href="https://github.com/w3c/pub-manifest/issues/176">176</a>.</li>
+					<li>28-Jan-2020: Added an extension point for profiles to add processing requirements for the
+						context. See issue <a href="https://github.com/w3c/pub-manifest/issues/186">186</a>.</li>
+					<li>27-Jan-2020: The table of contents processing algorithm has been updated to fix several bugs and
+						editorial issues in the expected outcomes. See issues <a
+							href="https://github.com/w3c/pub-manifest/issues/177">177</a> and <a
+							href="https://github.com/w3c/pub-manifest/issues/179">179</a>, as well as pull requests <a
+							href="https://github.com/w3c/pub-manifest/pull/180">180</a> and <a
+							href="https://github.com/w3c/pub-manifest/pull/182">182</a> for more details.</li>
+				</ul>
+				<p>For a complete list of issues addressed, refer to the <a
+						href="https://github.com/w3c/pub-manifest/issues?q=is%3Aissue+is%3Aclosed+sort%3Aupdated-desc"
+						>GitHub tracker</a>.</p>
+			</section>
+		</section>
 		<section id="iana-consideration" class="appendix informative">
-			<h2 id="d-iana-considerations"><bdi class="secno">D. </bdi>IANA considerations<a class="self-link"
+			<h2 id="e-iana-considerations"><bdi class="secno">E. </bdi>IANA considerations<a class="self-link"
 					aria-label="§" href="#iana-consideration"></a></h2>
 			<p><em>This section is non-normative.</em></p>
 
 			<section id="link-relation-type-registration">
-				<h3 id="d-1-link-relation-type-registration"><bdi class="secno">D.1 </bdi>Link relation type
+				<h3 id="e-1-link-relation-type-registration"><bdi class="secno">E.1 </bdi>Link relation type
 						registration<a class="self-link" aria-label="§" href="#link-relation-type-registration"
 					></a></h3>
-				<div class="note" role="note" id="issue-container-generatedID-33">
-					<div role="heading" class="note-title marker" id="h-note-28" aria-level="4">
+				<div class="note" role="note" id="issue-container-generatedID-35">
+					<div role="heading" class="note-title marker" id="h-note-30" aria-level="4">
 						<span>Note</span>
 					</div>
-					<p class=""> A request to register the <code>manifest</code> link relation type will be submitted to
-						IANA. </p>
+					<p class=""> A request to register the <code>publication</code> link relation type will be submitted
+						to IANA. </p>
 				</div>
 				<dl>
 					<dt>Relation Name:</dt>
@@ -7680,12 +7820,12 @@ enum TextDirection {
 
 		</section>
 		<section id="app-manifest-examples" class="appendix informative">
-			<h2 id="e-manifest-examples"><bdi class="secno">E. </bdi>Manifest Examples<a class="self-link"
+			<h2 id="f-manifest-examples"><bdi class="secno">F. </bdi>Manifest Examples<a class="self-link"
 					aria-label="§" href="#app-manifest-examples"></a></h2>
 			<p><em>This section is non-normative.</em></p>
 
 			<section id="basic-manifest">
-				<h3 id="e-1-basic-manifest"><bdi class="secno">E.1 </bdi>Basic Manifest<a class="self-link"
+				<h3 id="f-1-basic-manifest"><bdi class="secno">F.1 </bdi>Basic Manifest<a class="self-link"
 						aria-label="§" href="#basic-manifest"></a></h3>
 
 				<p>The following is a manifest with a basic set of metadata for an example book profile.</p>
@@ -7757,7 +7897,7 @@ enum TextDirection {
 			</section>
 
 			<section id="single-document-publication">
-				<h3 id="e-2-single-document-publication"><bdi class="secno">E.2 </bdi>Single-Document Publication<a
+				<h3 id="f-2-single-document-publication"><bdi class="secno">F.2 </bdi>Single-Document Publication<a
 						class="self-link" aria-label="§" href="#single-document-publication"></a></h3>
 
 				<p>The following is a manifest for an example article profile. The article consists only of the document
@@ -7841,13 +7981,13 @@ enum TextDirection {
 			</section>
 
 			<section id="audiobook">
-				<h3 id="e-3-audiobook"><bdi class="secno">E.3 </bdi>Audiobook<a class="self-link" aria-label="§"
+				<h3 id="f-3-audiobook"><bdi class="secno">F.3 </bdi>Audiobook<a class="self-link" aria-label="§"
 						href="#audiobook"></a></h3>
 
 				<p>The following example shows a manifest that conforms to the <a
-						href="https://www.w3.org/TR/audiobooks">Audiobooks profile</a> [<cite><a class="bibref"
-							href="#bib-audiobooks" title="Audiobook Profile for Publication Manifest"
-							data-link-type="biblio">audiobooks</a></cite>].</p>
+						href="https://www.w3.org/TR/audiobooks/">Audiobooks profile</a> [<cite><a class="bibref"
+							data-link-type="biblio" href="#bib-audiobooks"
+							title="Audiobook Profile for Web Publications">audiobooks</a></cite>].</p>
 
 				<p>A <a href="https://w3c.github.io/pub-manifest/experiments/audiobook/flatland-canonical.json">JSON
 						encoding of the internal representation</a> of this manifest is also available.</p>
@@ -7961,7 +8101,7 @@ enum TextDirection {
 			</section>
 		</section>
 		<section id="app-properties-index" class="appendix informative">
-			<h2 id="f-properties-index"><bdi class="secno">F. </bdi>Properties Index<a class="self-link" aria-label="§"
+			<h2 id="g-properties-index"><bdi class="secno">G. </bdi>Properties Index<a class="self-link" aria-label="§"
 					href="#app-properties-index"></a></h2>
 			<p><em>This section is non-normative.</em></p>
 
@@ -8149,7 +8289,8 @@ enum TextDirection {
 							<code>inLanguage</code>
 						</td>
 						<td>
-							<a href="#inLanguage"></a>
+							<a href="#inLanguage" class="sec-ref">§&#160;<bdi class="secno">4.7.1.9 </bdi>Publication
+								Language</a>
 						</td>
 					</tr>
 					<tr>
@@ -8263,7 +8404,7 @@ enum TextDirection {
 			</table>
 		</section>
 		<section id="app-rel-index" class="appendix informative">
-			<h2 id="g-resource-relations-index"><bdi class="secno">G. </bdi>Resource Relations Index<a class="self-link"
+			<h2 id="h-resource-relations-index"><bdi class="secno">H. </bdi>Resource Relations Index<a class="self-link"
 					aria-label="§" href="#app-rel-index"></a></h2>
 			<p><em>This section is non-normative.</em></p>
 
@@ -8291,8 +8432,8 @@ enum TextDirection {
 							<code>contents</code>
 						</td>
 						<td>
-							<a href="#pub-table-of-contents" class="sec-ref">§&#160;<bdi class="secno">4.8.1.3
-								</bdi>Table of Contents</a>
+							<a href="#contents" class="sec-ref">§&#160;<bdi class="secno">4.8.1.3 </bdi>Table of
+								Contents</a>
 						</td>
 					</tr>
 					<tr>
@@ -8332,7 +8473,7 @@ enum TextDirection {
 			</table>
 		</section>
 		<section id="ack" class="appendix informative">
-			<h2 id="h-acknowledgements"><bdi class="secno">H. </bdi>Acknowledgements<a class="self-link" aria-label="§"
+			<h2 id="i-acknowledgements"><bdi class="secno">I. </bdi>Acknowledgements<a class="self-link" aria-label="§"
 					href="#ack"></a></h2>
 			<p><em>This section is non-normative.</em></p>
 			<p>The editors would like to thank the members of the Publishing Working Group for their contributions to
@@ -8432,11 +8573,10 @@ enum TextDirection {
 				specification. </p>
 		</section>
 		<section id="references" class="appendix">
-			<h2 id="i-references"><bdi class="secno">I. </bdi>References<a class="self-link" aria-label="§"
+			<h2 id="j-references"><bdi class="secno">J. </bdi>References<a class="self-link" aria-label="§"
 					href="#references"></a></h2>
-
 			<section id="normative-references">
-				<h3 id="i-1-normative-references"><bdi class="secno">I.1 </bdi>Normative references<a class="self-link"
+				<h3 id="j-1-normative-references"><bdi class="secno">J.1 </bdi>Normative references<a class="self-link"
 						aria-label="§" href="#normative-references"></a></h3>
 				<dl class="bibliography">
 					<dt id="bib-accname-1.1">[accname-1.1]</dt>
@@ -8449,10 +8589,10 @@ enum TextDirection {
 						Phillips; M. Davis. IETF. September 2009. IETF Best Current Practice. URL: <a
 							href="https://tools.ietf.org/html/bcp47">https://tools.ietf.org/html/bcp47</a></dd>
 					<dt id="bib-bibo">[bibo]</dt>
-					<dd><a href="http://bibliontology.org/specification"><cite>Bibliographic Ontology
+					<dd><a href="http://www.bibliontology.com/specification.html"><cite>Bibliographic Ontology
 								Specification</cite></a>. Bruce D'Arcus; Frédérick Giasson. Structured Dynamics LLC. 11
-						May 2016. URL: <a href="http://bibliontology.org/specification"
-							>http://bibliontology.org/specification</a></dd>
+						May 2016. URL: <a href="http://bibliographic-ontology.org/specification"
+							>http://bibliographic-ontology.org/specification</a></dd>
 					<dt id="bib-bibtex">[bibtex]</dt>
 					<dd><a href="http://www.bibtex.org/Format/"><cite>BibTeX Format Description</cite></a>. URL: <a
 							href="http://www.bibtex.org/Format/">http://www.bibtex.org/Format/</a></dd>
@@ -8514,7 +8654,7 @@ enum TextDirection {
 							>https://tools.ietf.org/html/rfc4627</a></dd>
 					<dt id="bib-json-ld11">[json-ld11]</dt>
 					<dd><a href="https://www.w3.org/TR/json-ld11/"><cite>JSON-LD 1.1</cite></a>. Gregg Kellogg;
-						Pierre-Antoine Champin; Dave Longley. W3C. 12 November 2019. W3C Working Draft. URL: <a
+						Pierre-Antoine Champin; Dave Longley. W3C. 18 October 2019. W3C Working Draft. URL: <a
 							href="https://www.w3.org/TR/json-ld11/">https://www.w3.org/TR/json-ld11/</a></dd>
 					<dt id="bib-mfrel">[mfrel]</dt>
 					<dd><a href="http://microformats.org/wiki/existing-rel-values#HTML5_link_type_extensions"
@@ -8522,8 +8662,8 @@ enum TextDirection {
 							href="http://microformats.org/wiki/existing-rel-values#HTML5_link_type_extensions"
 							>http://microformats.org/wiki/existing-rel-values#HTML5_link_type_extensions</a></dd>
 					<dt id="bib-onix">[onix]</dt>
-					<dd><a href="http://www.editeur.org/83/Overview"><cite>ONIX for Books</cite></a>. URL: <a
-							href="http://www.editeur.org/83/Overview">http://www.editeur.org/83/Overview</a></dd>
+					<dd><a href="https://www.editeur.org/83/Overview"><cite>ONIX for Books</cite></a>. URL: <a
+							href="https://www.editeur.org/83/Overview">https://www.editeur.org/83/Overview</a></dd>
 					<dt id="bib-rfc2046">[rfc2046]</dt>
 					<dd><a href="https://tools.ietf.org/html/rfc2046"><cite>Multipurpose Internet Mail Extensions (MIME)
 								Part Two: Media Types</cite></a>. N. Freed; N. Borenstein. IETF. November 1996. Draft
@@ -8556,11 +8696,6 @@ enum TextDirection {
 					<dd><a href="https://url.spec.whatwg.org/"><cite>URL Standard</cite></a>. Anne van Kesteren. WHATWG.
 						Living Standard. URL: <a href="https://url.spec.whatwg.org/"
 						>https://url.spec.whatwg.org/</a></dd>
-					<dt id="bib-wcag">[WCAG]</dt>
-					<dd><a href="https://www.w3.org/TR/WAI-WEBCONTENT/"><cite>Web Content Accessibility Guidelines
-								1.0</cite></a>. Wendy Chisholm; Gregg Vanderheiden; Ian Jacobs. W3C. 5 May 1999. W3C
-						Recommendation. URL: <a href="https://www.w3.org/TR/WAI-WEBCONTENT/"
-							>https://www.w3.org/TR/WAI-WEBCONTENT/</a></dd>
 					<dt id="bib-wcag21">[wcag21]</dt>
 					<dd><a href="https://www.w3.org/TR/WCAG21/"><cite>Web Content Accessibility Guidelines (WCAG)
 								2.1</cite></a>. Andrew Kirkpatrick; Joshue O Connor; Alastair Campbell; Michael Cooper.
@@ -8569,12 +8704,12 @@ enum TextDirection {
 				</dl>
 			</section>
 			<section id="informative-references">
-				<h3 id="i-2-informative-references"><bdi class="secno">I.2 </bdi>Informative references<a
+				<h3 id="j-2-informative-references"><bdi class="secno">J.2 </bdi>Informative references<a
 						class="self-link" aria-label="§" href="#informative-references"></a></h3>
 				<dl class="bibliography">
 					<dt id="bib-audiobooks">[audiobooks]</dt>
-					<dd><a href="https://www.w3.org/TR/audiobooks/"><cite>Audiobook Profile for Publication
-								Manifest</cite></a>. Wendy Reid. W3C. 11 September 2019. W3C Working Draft. URL: <a
+					<dd><a href="https://www.w3.org/TR/audiobooks/"><cite>Audiobook Profile for Web
+							Publications</cite></a>. Wendy Reid. W3C. 20 June 2019. W3C Working Draft. URL: <a
 							href="https://www.w3.org/TR/audiobooks/">https://www.w3.org/TR/audiobooks/</a></dd>
 					<dt id="bib-ecma-404">[ecma-404]</dt>
 					<dd><a href="https://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf"><cite>The
@@ -8597,10 +8732,6 @@ enum TextDirection {
 						Nelson; G. Bilder; J. Kunze; S. Warner. IETF. URL: <a
 							href="https://tools.ietf.org/html/draft-vandesompel-identifier-00"
 							>https://tools.ietf.org/html/draft-vandesompel-identifier-00</a></dd>
-					<dt id="bib-rfc3987">[rfc3987]</dt>
-					<dd><a href="https://tools.ietf.org/html/rfc3987"><cite>Internationalized Resource Identifiers
-								(IRIs)</cite></a>. M. Duerst; M. Suignard. IETF. January 2005. Proposed Standard. URL:
-							<a href="https://tools.ietf.org/html/rfc3987">https://tools.ietf.org/html/rfc3987</a></dd>
 					<dt id="bib-string-meta">[string-meta]</dt>
 					<dd><a href="https://w3c.github.io/string-meta/"><cite>Requirements for Language and Direction
 								Metadata in Data Formats</cite></a>. Addison Phillips; Richard Ishida. 2017-12-01. URL:
@@ -8610,9 +8741,9 @@ enum TextDirection {
 						December 2016. W3C Editor's Draft. URL: <a href="https://heycam.github.io/webidl/"
 							>https://heycam.github.io/webidl/</a></dd>
 					<dt id="bib-webschemas-a11y">[webschemas-a11y]</dt>
-					<dd><a href="http://www.w3.org/wiki/WebSchemas/Accessibility"><cite>WebSchemas
-							Accessibility</cite></a>. URL: <a href="http://www.w3.org/wiki/WebSchemas/Accessibility"
-							>http://www.w3.org/wiki/WebSchemas/Accessibility</a></dd>
+					<dd><a href="https://www.w3.org/wiki/WebSchemas/Accessibility"><cite>WebSchemas
+							Accessibility</cite></a>. URL: <a href="https://www.w3.org/wiki/WebSchemas/Accessibility"
+							>https://www.w3.org/wiki/WebSchemas/Accessibility</a></dd>
 				</dl>
 			</section>
 		</section><p role="navigation" id="back-to-top"><a href="#title"><abbr title="Back to Top"
