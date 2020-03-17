@@ -1,58 +1,51 @@
 
-function generateResults() {
+function generateResults(testsuite) {
 
-	getTestList()
-		.then ( function(tests) {
+	getTestList(testsuite)
+		.then ( function(data) {
 			
-			var testsuites = ['generic', 'audiobooks'];
+			var testsuite = data.testsuite;
+			var tests = data.data;
+			
 			var results = document.getElementById('results');
 			var manifest_link = document.getElementById('manifest-link');
-			var test_base_url = 'https://iherman.github.io/pub_manifest_api_tests/tests/';
+			var test_base_url = 'https://w3c.github.io/publ-tests/';
 			
-			while(results.hasChildNodes()){
-				results.removeChild(results.firstChild);
-			}
+			for (var t = 0; t < tests['tests'].length; t++) {
 			
-			for (var j = 0; j < testsuites.length; j++) {
+				var testgroup = tests['tests'][t];
 				
-				var testsuite = testsuites[j];
+				for (var z = 0; z < testgroup['tests'].length; z++) {
 				
-				for (var t = 0; t < tests[testsuite]['tests'].length; t++) {
-				
-					var testgroup = tests[testsuite]['tests'][t];
+					var test = testgroup['tests'][z];
+					manifest_link.href = test_base_url + testsuite + '/manifest_processing/tests/test_' + test['id'] + '.jsonld'
 					
-					for (var z = 0; z < testgroup['tests'].length; z++) {
-					
-						var test = testgroup['tests'][z];
-						manifest_link.href = test_base_url + testsuite + '/test_' + test['id'] + '.jsonld'
+					if (test.hasOwnProperty('media-type') && test['media-type'] == 'application/ld+json') {
+						manifestProcessor.processManifest({'test' : test, 'flags' : { 'skipAudioInReadingOrder' : 1 }})
+							.then(function(processed) {
+								var test_result = processResult(processed);
+								results.appendChild(test_result);
+							})
+							.catch(function(processed) {
+								var test_result = processResult(processed);
+								results.appendChild(test_result);
+							});
+					}
+					else {
+						var err = test.hasOwnProperty('media-type') ? 
+									(test['media-type'] == 'text/html' ? 'This test can only be run on an embedded manifest.' 
+																			: 'This test has the unknown media type "' + test['media-type'] + '".')
+									: 'The media-type of this test must be specified in the configuration file in order to process.'
 						
-						if (test.hasOwnProperty('media-type') && test['media-type'] == 'application/ld+json') {
-							manifestProcessor.processManifest({'test' : test, 'flags' : { 'skipAudioInReadingOrder' : 1 }})
-								.then(function(processed) {
-									var test_result = processResult(processed);
-									results.appendChild(test_result);
-								})
-								.catch(function(processed) {
-									var test_result = processResult(processed);
-									results.appendChild(test_result);
-								});
-						}
-						else {
-							var err = test.hasOwnProperty('media-type') ? 
-										(test['media-type'] == 'text/html' ? 'This test can only be run on an embedded manifest.' 
-																				: 'This test has the unknown media type "' + test['media-type'] + '".')
-										: 'The media-type of this test must be specified in the configuration file in order to process.'
-							
-							var warning = {
-								'internal_rep' : null,
-								'manifest_link' : manifest_link.href,
-								'test' : test,
-								'skipped' : true,
-								'error' : err 
-							};
-							var test_result = processResult(warning);
-							results.appendChild(test_result);
-						}
+						var warning = {
+							'internal_rep' : null,
+							'manifest_link' : manifest_link.href,
+							'test' : test,
+							'skipped' : true,
+							'error' : err 
+						};
+						var test_result = processResult(warning);
+						results.appendChild(test_result);
 					}
 				}
 			}
@@ -65,13 +58,25 @@ function generateResults() {
 
 }
 
-function getTestList() {
+
+function clearPreviousRun() {
+	var results = document.getElementById('results');
+	while(results.hasChildNodes()){
+		results.removeChild(results.firstChild);
+	}
+}
+
+
+function getTestList(testsuite) {
 	return new Promise( function(resolve, reject) {
 		
+		var url = 'https://w3c.github.io/publ-tests/' + testsuite + '/manifest_processing/tests/index.json';
+		
 		$.ajax({
-			url:       'https://iherman.github.io/pub_manifest_api_tests/tests/index.json',
+			url:       url,
 			cache:     false,
-			success: function(data) {
+			success: function(testlist) {
+				var data = {'testsuite': testsuite, 'data': testlist}
 				resolve(data);
 			},
 			error: function(xhr, status, error) {
