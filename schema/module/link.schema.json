@@ -1,11 +1,11 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "link.schema.json",
+    "$id": "https://www.w3.org/ns/pub-schema/manifest/module/link.schema.json",
     "title": "Publication Links",
     "type": "object",
     "properties": {
         "type": {
-            "anyOf": [
+            "oneOf": [
                 {
                     "type": "string",
                     "const": "LinkedResource"
@@ -22,13 +22,13 @@
             ]
         },
         "url": {
-            "$ref": "url.schema.json"
+            "$ref": "https://www.w3.org/ns/pub-schema/manifest/module/url.schema.json"
         },
         "encodingFormat": {
             "type": "string"
         },
         "name": {
-            "$ref": "localizable.schema.json"
+            "$ref": "https://www.w3.org/ns/pub-schema/manifest/module/localizable.schema.json"
         },
         "description": {
             "anyOf": [
@@ -36,7 +36,7 @@
                     "type": "string"
                 },
                 {
-                    "$ref": "localizable-object.schema.json"
+                    "$ref": "https://www.w3.org/ns/pub-schema/manifest/module/localizable-object.schema.json"
                 }
             ]
         },
@@ -53,22 +53,10 @@
             "type": "string"
         },
         "duration": {
-            "type": "string",
-            "pattern": "^P(?!$)((\\d+Y)|(\\d+\\.\\d+Y$))?((\\d+M)|(\\d+\\.\\d+M$))?((\\d+W)|(\\d+\\.\\d+W$))?((\\d+D)|(\\d+\\.\\d+D$))?(T(?=\\d)((\\d+H)|(\\d+\\.\\d+H$))?((\\d+M)|(\\d+\\.\\d+M$))?(\\d+(\\.\\d+)?S)?)??$"
+        	"$ref": "https://www.w3.org/ns/pub-schema/manifest/module/duration.schema.json"
         },
         "alternate": {
-            "type": "array",
-            "items": {
-                "anyOf": [
-                    {
-                        "$ref": "url.schema.json"
-                    },
-                    {
-                        "$ref": "link.schema.json"
-                    }
-                ]
-            },
-            "uniqueItems": true
+        	"$ref": "https://www.w3.org/ns/pub-schema/manifest/module/resource.categorization.schema.json"
         }
     },
     "required": [

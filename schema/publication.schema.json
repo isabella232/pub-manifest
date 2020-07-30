@@ -1,187 +1,124 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "publication.schema.json",
-    "title": "Publication Manifest",
-    "type": "object",
-    "properties": {
-        "@context": {
-            "type": "array",
-            "items": [
-                {
-                    "const": "https://schema.org"
-                },
-                {
-                    "const": "https://www.w3.org/ns/pub-context"
-                }
-            ],
-            "additionalItems": true,
-            "uniqueItems": true
-        },
-        "type": {
-            "type": [
-                "string",
-                "array"
-            ],
-            "items": {
-                "type": "string"
-            },
-            "uniqueItems": true
-        },
-        "conformsTo" : {
-            "oneOf": [
-                {
-                    "$ref": "url.schema.json"
-                },
-                {
-                    "type": "array",
-                    "items": {
-                        "$ref": "url.schema.json"
-                    }        
-                }
-            ]
-        },
-        "id": {
-            "type": "string"
-        },
-        "abridged": {
-        	"type": "boolean"
-        },
-        "accessMode": {
-            "type": [
-                "string",
-                "array"
-            ],
-            "items": {
-                "type": "string"
-            },
-            "uniqueItems": true
-        },
-        "accessModeSufficient": {
-            "type": [
-                "string",
-                "array"
-            ],
-            "items": {
-                "type": "string"
-            },
-            "uniqueItems": true
-        },
-        "accessibilityFeature": {
-            "type": [
-                "string",
-                "array"
-            ],
-            "items": {
-                "type": "string"
-            },
-            "uniqueItems": true
-        },
-        "accessibilityHazard": {
-            "type": "array",
-            "items": {
-                "type": "string"
-            },
-            "uniqueItems": true
-        },
-        "accessibilitySummary": {
-            "$ref": "localizable.schema.json"
-        },
-        "artist": {
-            "$ref": "contributor.schema.json"
-        },
-        "author": {
-            "$ref": "contributor.schema.json"
-        },
-        "colorist": {
-            "$ref": "contributor.schema.json"
-        },
-        "contributor": {
-            "$ref": "contributor.schema.json"
-        },
-        "creator": {
-            "$ref": "contributor.schema.json"
-        },
-        "editor": {
-            "$ref": "contributor.schema.json"
-        },
-        "illustrator": {
-            "$ref": "contributor.schema.json"
-        },
-        "inker": {
-            "$ref": "contributor.schema.json"
-        },
-        "letterer": {
-            "$ref": "contributor.schema.json"
-        },
-        "penciler": {
-            "$ref": "contributor.schema.json"
-        },
-        "publisher": {
-            "$ref": "contributor.schema.json"
-        },
-        "readBy": {
-            "$ref": "contributor.schema.json"
-        },
-        "translator": {
-            "$ref": "contributor.schema.json"
-        },
-        "url": {
-            "$ref": "url.schema.json"
-        },
-        "duration": {
-            "type": "string",
-            "pattern": "^P(?!$)((\\d+Y)|(\\d+\\.\\d+Y$))?((\\d+M)|(\\d+\\.\\d+M$))?((\\d+W)|(\\d+\\.\\d+W$))?((\\d+D)|(\\d+\\.\\d+D$))?(T(?=\\d)((\\d+H)|(\\d+\\.\\d+H$))?((\\d+M)|(\\d+\\.\\d+M$))?(\\d+(\\.\\d+)?S)?)??$"
-        },
-        "inLanguage": {
-            "oneOf": [
-                {
-                    "$ref": "bcp.schema.json"
-                },
-                {
-                    "type": "array",
-                    "items": {
-                        "$ref": "bcp.schema.json"
-                    }        
-                }
-            ]
-        },
-        "dateModified": {
-            "type": "string",
-            "anyOf": [
-                {
-                    "format": "date"
-                },
-                {
-                    "format": "date-time"
-                }
-            ]
-        },
-        "datePublished": {
-            "type": "string",
-            "anyOf": [
-                {
-                    "format": "date"
-                },
-                {
-                    "format": "date-time"
-                }
-            ]
-        },
-        "name": {
-            "$ref": "localizable.schema.json"
-        },
-        "readingOrder": {
-            "$ref": "resource.categorization.schema.json"
-        },
-        "resources": {
-            "$ref": "resource.categorization.schema.json"
-        },
-        "links": {
-            "$ref": "resource.categorization.schema.json"
-        }
-    },
-    "required": [
-        "@context",
-        "conformsTo"
-    ]
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"$id": "https://www.w3.org/ns/pub-schema/manifest/publication.schema.json",
+	"title": "Publication Manifest",
+	"type": "object",
+	"properties": {
+		"@context": {
+			"$ref": "https://www.w3.org/ns/pub-schema/manifest/module/context.schema.json"
+		},
+		"type": {
+			"type": [
+				"string",
+				"array"
+			],
+			"items": {
+				"type": "string"
+			}
+		},
+		"conformsTo" : {
+			"oneOf": [
+				{
+					"$ref": "https://www.w3.org/ns/pub-schema/manifest/module/url.schema.json"
+				},
+				{
+					"type": "array",
+					"items": {
+						"$ref": "https://www.w3.org/ns/pub-schema/manifest/module/url.schema.json"
+					}		
+				}
+			]
+		},
+		"id": {
+			"type": "string"
+		},
+		"abridged": {
+			"type": "boolean"
+		},
+		"accessMode": {
+			"$ref": "https://www.w3.org/ns/pub-schema/manifest/module/strings.schema.json"
+		},
+		"accessModeSufficient": {
+			"$ref": "https://www.w3.org/ns/pub-schema/manifest/module/item-lists.schema.json"
+		},
+		"accessibilityFeature": {
+			"$ref": "https://www.w3.org/ns/pub-schema/manifest/module/strings.schema.json"
+		},
+		"accessibilityHazard": {
+			"$ref": "https://www.w3.org/ns/pub-schema/manifest/module/strings.schema.json"
+		},
+		"accessibilitySummary": {
+			"$ref": "https://www.w3.org/ns/pub-schema/manifest/module/localizable.schema.json"
+		},
+		"artist": {
+			"$ref": "https://www.w3.org/ns/pub-schema/manifest/module/contributor.schema.json"
+		},
+		"author": {
+			"$ref": "https://www.w3.org/ns/pub-schema/manifest/module/contributor.schema.json"
+		},
+		"colorist": {
+			"$ref": "https://www.w3.org/ns/pub-schema/manifest/module/contributor.schema.json"
+		},
+		"contributor": {
+			"$ref": "https://www.w3.org/ns/pub-schema/manifest/module/contributor.schema.json"
+		},
+		"creator": {
+			"$ref": "https://www.w3.org/ns/pub-schema/manifest/module/contributor.schema.json"
+		},
+		"editor": {
+			"$ref": "https://www.w3.org/ns/pub-schema/manifest/module/contributor.schema.json"
+		},
+		"illustrator": {
+			"$ref": "https://www.w3.org/ns/pub-schema/manifest/module/contributor.schema.json"
+		},
+		"inker": {
+			"$ref": "https://www.w3.org/ns/pub-schema/manifest/module/contributor.schema.json"
+		},
+		"letterer": {
+			"$ref": "https://www.w3.org/ns/pub-schema/manifest/module/contributor.schema.json"
+		},
+		"penciler": {
+			"$ref": "https://www.w3.org/ns/pub-schema/manifest/module/contributor.schema.json"
+		},
+		"publisher": {
+			"$ref": "https://www.w3.org/ns/pub-schema/manifest/module/contributor.schema.json"
+		},
+		"readBy": {
+			"$ref": "https://www.w3.org/ns/pub-schema/manifest/module/contributor.schema.json"
+		},
+		"translator": {
+			"$ref": "https://www.w3.org/ns/pub-schema/manifest/module/contributor.schema.json"
+		},
+		"url": {
+			"$ref": "https://www.w3.org/ns/pub-schema/manifest/module/urls.schema.json"
+		},
+		"duration": {
+			"$ref": "https://www.w3.org/ns/pub-schema/manifest/module/duration.schema.json"
+		},
+		"inLanguage": {
+			"$ref": "https://www.w3.org/ns/pub-schema/manifest/module/language.schema.json"
+		},
+		"dateModified": {
+			"$ref": "https://www.w3.org/ns/pub-schema/manifest/module/date.schema.json"
+		},
+		"datePublished": {
+			"$ref": "https://www.w3.org/ns/pub-schema/manifest/module/date.schema.json"
+		},
+		"name": {
+			"$ref": "https://www.w3.org/ns/pub-schema/manifest/module/localizable.schema.json"
+		},
+		"readingOrder": {
+			"$ref": "https://www.w3.org/ns/pub-schema/manifest/module/resource.categorization.schema.json"
+		},
+		"resources": {
+			"$ref": "https://www.w3.org/ns/pub-schema/manifest/module/resource.categorization.schema.json"
+		},
+		"links": {
+			"$ref": "https://www.w3.org/ns/pub-schema/manifest/module/resource.categorization.schema.json"
+		}
+	},
+	"required": [
+		"@context",
+		"conformsTo"
+	]
 }

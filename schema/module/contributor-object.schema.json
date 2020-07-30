@@ -1,17 +1,17 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "contributor-object.schema.json",
+    "$id": "https://www.w3.org/ns/pub-schema/manifest/module/contributor-object.schema.json",
     "title": "Contributor Object",
     "type": "object",
     "properties": {
         "name": {
-            "$ref": "localizable.schema.json"
+            "$ref": "https://www.w3.org/ns/pub-schema/manifest/module/localizable.schema.json"
         },
         "id": {
-            "$ref": "url.schema.json"
+            "$ref": "https://www.w3.org/ns/pub-schema/manifest/module/url.schema.json"
         },
         "type": {
-            "anyOf": [
+            "oneOf": [
                 {
                     "type": "string",
                     "enum": [
@@ -35,7 +35,7 @@
             ]
         },
         "url": {
-        	"$ref": "url.schema.json" 
+        	"$ref": "https://www.w3.org/ns/pub-schema/manifest/module/url.schema.json" 
         },
         "identifier": {
         	"type": "array",
