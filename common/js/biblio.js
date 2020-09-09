@@ -131,5 +131,5 @@ var localBiblio = {
     "mfrel": {
     	"title": "Microformats Wiki: existing rel values. Microformats.",
     	"href": "http://microformats.org/wiki/existing-rel-values#HTML5_link_type_extensions"
-    }
+    },
 }
