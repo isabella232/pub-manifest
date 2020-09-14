@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="utf-8" />
 		<title>Publication Manifest</title>
-		<script src="https://www.w3.org/Tools/respec/respec-w3c-common" class="remove" defer="defer"></script>
+		<script src="https://www.w3.org/Tools/respec/respec-w3c" class="remove" defer="defer"></script>
 		<script src="common/js/biblio.js" class="remove"></script>
 		<script src="common/js/idllink.js" class="remove"></script>
 		<script src="https://unpkg.com/reqlist/lib/reqlist.js" class="remove"></script>
@@ -20,12 +20,12 @@
 				wg: "Publishing Working Group",
 				specStatus: "ED",
 				shortName: "pub-manifest",
-				previousPublishDate: "2020-09-09",
+				previousPublishDate: "2020-09-14",
 				previousMaturity: "CR",
 				implementationReportURI: "https://www.w3.org/publishing/groups/publ-wg/implementation/results.html",
 				crEnd: "2020-03-31",
 				edDraftURI: "https://w3c.github.io/pub-manifest/",
-				errata:     "https://w3c.github.io/pub-manifest/errata/",
+				errata: "https://w3c.github.io/pub-manifest/errata/",
 				editors:[ {
 					"name": "Matt Garrish",
 					"company": "DAISY Consortium",
@@ -39,7 +39,7 @@
 					"orcid": "0000-0003-0782-2704",
 					"companyURL": "https://www.w3.org",
 				}],
-				processVersion: 2018,
+				processVersion: 2020,
 				includePermalinks: false,
 				permalinkEdge: true,
 				permalinkHide: false,
@@ -2954,7 +2954,7 @@
 					</li>
 
 					<li id="processing-context">
-						<p>(<a href="#manifest-context"></a>) If <var>manifest["context"]</var> is not set to a <a
+						<p>(<a href="#manifest-context"></a>) If <var>manifest["@context"]</var> is not set to a <a
 								href="https://infra.spec.whatwg.org/#list">list</a>, or the first and second <a
 								href="https://infra.spec.whatwg.org/#list-item">items</a> in
 								<var>manifest["@context"]</var> are not the <a
@@ -3473,7 +3473,7 @@
 													href="#processing-normalize">normalize data</a>, when successful,
 												given <var>key</var>, <var>keyValue</var>, <var>lang</var>,
 													<var>dir</var>, <var>base</var> and using
-													<var>keyValue["type"]</var> as the context. If failure is returned,
+													<var>item["type"]</var> as the context. If failure is returned,
 													<a href="https://infra.spec.whatwg.org/#list-remove">remove</a>
 												<var>key</var> from <var>item</var>.</p>
 										</li>
@@ -3487,14 +3487,14 @@
 											href="https://infra.spec.whatwg.org/#ordered-map">map</a>:</p>
 									<ol>
 										<li>
-											<p>if <var>item["type"]</var> is set and includes a <a>recognized type</a>,
+											<p>if <var>normalized["type"]</var> is set and includes a <a>recognized type</a>,
 													<a href="https://infra.spec.whatwg.org/#map-iterate">for each</a>
 												<var>key</var> → <var>keyValue</var> of <var>normalized</var>, set
 													<var>key</var> to the result of running <a
 													href="#processing-normalize">normalize data</a>, when successful,
 												given <var>key</var>, <var>keyValue</var>, <var>lang</var>,
 													<var>dir</var>, <var>base</var> and using
-													<var>keyValue["type"]</var> as the context. If failure is returned,
+													<var>normalized["type"]</var> as the context. If failure is returned,
 													<a href="https://infra.spec.whatwg.org/#list-remove">remove</a>
 												<var>key</var> from <var>normalized</var>.</p>
 										</li>
@@ -5232,18 +5232,22 @@ dictionary LocalizableString {
 			<h2>Change Log</h2>
 
 			<section id="change-log-latest">
-				<h3>Substantive changes since the <a href="https://www.w3.org/TR/2020/CR-pub-manifest-20200730/"
+				<h3>Substantive changes since the <a href="https://www.w3.org/TR/2020/CR-pub-manifest-20200909/"
 						>previous version</a></h3>
 
 				<ul>
-					<li>4-Sept-2020: Updated the reference to ISO 8601:2004 to the revised ISO 8601-1:2019. See <a
-							href="https://github.com/w3c/audiobooks/issues/65">issue 65</a> (Audiobooks tracker).</li>
+					<li>14-Sept-2020: Several minor fixes to correct variable names in the processing algorithm. See
+						pull requests <a href="https://github.com/w3c/pub-manifest/pull/232">232</a>, <a
+							href="https://github.com/w3c/pub-manifest/pull/233">233</a> and <a
+							href="https://github.com/w3c/pub-manifest/pull/234">234</a>.</li>
 				</ul>
 			</section>
 
 			<section id="change-log-older">
 				<h3>Other substantive changes since Candidate Recommendation</h3>
 				<ul>
+					<li>4-Sept-2020: Updated the reference to ISO 8601:2004 to the revised ISO 8601-1:2019. See <a
+							href="https://github.com/w3c/audiobooks/issues/65">issue 65</a> (Audiobooks tracker).</li>
 					<li>27-July-2020: Updated the reference schema URL to a W3C address. See <a
 							href="https://github.com/w3c/pub-manifest/issues/226">issue 226</a>.</li>
 					<li>30-Apr-2020: Noted the issue with the author and creator properties being synonyms in
